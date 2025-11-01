@@ -1,15 +1,13 @@
 # UEKScript
 
-**吉里吉里風スクリプト言語をUnreal Engine 5で実装するプロジェクト**
+**ティラノスクリプト風スクリプト言語をUnreal Engine 5で実装するプロジェクト**
 
 ## プロジェクト概要
 
-UEKScriptは、日本で人気の高い小説ゲーム制作エンジン「吉里吉里」のスクリプト文法をUnreal Engine 5上で動作するように実装したスクリプトエンジンです。
+UEKScriptは、日本で人気の高いノベルゲーム制作エンジン「ティラノスクリプト」風のスクリプト文法をUnreal Engine 5上で動作するように実装したスクリプトエンジンです。
 
 ### 目標
-
-- 吉里吉里風のタグベーススクリプト文法の実装
-- ティラノスクリプトやノベルゲーム開発に親しんだ開発者の移行支援
+- ティラノスクリプトのタグベーススクリプト文法の実装
 - UE5の強力な3D機能とビジュアル表現を活用したノベルゲーム制作環境の提供
 
 ## プロジェクト構成
@@ -23,7 +21,8 @@ UEKScript/
 ├── Plugins/                     # プラグイン（メイン開発場所）
 │   └── KScript/                # KScript プラグイン（全機能をここに実装）
 │       ├── Source/             # プラグインのC++ソースコード
-│       │   └── KScript/        # メインモジュール
+│       │   ├── KScript/        # ランタイムモジュール
+│       │   └── KScriptEditor/  # エディタ拡張モジュール
 │       ├── Content/            # プラグイン用アセット
 │       ├── Resources/          # アイコン等のリソース
 │       └── KScript.uplugin     # プラグイン定義ファイル
@@ -105,7 +104,7 @@ UEKScript/
 
 ```cpp
 // プラグイン内の主要クラス構成例
-// Plugins/KScript/Source/KScript/Public/
+// Plugins/KScript/Source/KScript/Public/ (Runtime)
 class KSCRIPT_API UKScriptEngine : public UObject
 {
     // スクリプト実行エンジン
@@ -125,12 +124,27 @@ class KSCRIPT_API UKScriptSubsystem : public UGameInstanceSubsystem
 {
     // ゲーム全体でのKScript管理
 };
+
+// Plugins/KScript/Source/KScriptEditor/Public/ (Editor Only)
+class KSCRIPTEDITOR_API FKScriptEditorModule : public IModuleInterface
+{
+    // エディタモジュールのメインクラス
+};
+
+class KSCRIPTEDITOR_API UKScriptAssetFactory : public UFactory
+{
+    // .ksファイルの作成・インポート支援
+};
 ```
 
 ### モジュール分離
 
 - **KScript（Runtime）**: ゲーム実行時に必要な機能
 - **KScriptEditor（Editor Only）**: エディタ拡張機能
+  - スクリプトファイル（.ks）のシンタックスハイライト
+  - エディタ内でのスクリプト編集支援
+  - デバッグツールとプレビュー機能
+  - アセット管理とプロジェクト統合
 - **サンプルプロジェクト**: 使用例とテストケース
 
 ### ファイル構成規則
@@ -142,15 +156,11 @@ class KSCRIPT_API UKScriptSubsystem : public UGameInstanceSubsystem
 ## 参考資料
 
 ### 参考となるスクリプトエンジン
-
-1. **吉里吉里Z**
-   - 元祖となるスクリプトエンジン
-   - TJS（TyranoScript JavaScript）の文法
-
-2. **ティラノスクリプト**
+1. **ティラノスクリプト**
    - Webベースのノベルゲームエンジン
    - タグベース文法の現代的実装
    - 参考URL: https://tyrano.jp/
+   - タグリファレンス：https://tyrano.jp/tag/#chara_ptext
 
 ### 実装時の注意点
 
@@ -179,8 +189,12 @@ class KSCRIPT_API UKScriptSubsystem : public UGameInstanceSubsystem
 - [ ] UE5固有機能との統合
 
 ### Phase 4: 開発支援ツール（プラグイン内エディタ拡張）
-- [ ] エディタ拡張（KScriptEditorモジュール）
-- [ ] デバッグツール
+- [x] KScriptEditorモジュールの作成
+- [ ] スクリプトファイル（.ks）のカスタムアセットタイプ実装
+- [ ] シンタックスハイライト機能
+- [ ] エディタ内でのスクリプトプレビュー
+- [ ] デバッグツール（ブレークポイント、ステップ実行）
+- [ ] 変数ウォッチ機能
 - [ ] パッケージング支援
 
 ### Phase 5: プラグイン配布準備

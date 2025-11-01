@@ -1,0 +1,9 @@
+{
+	"RemapUnityFiles": 
+	{
+		"Module.KScript.cpp.obj": [
+			"PerModuleInline.gen.cpp.obj",
+			"KScript.cpp.obj"
+		]
+	}
+}

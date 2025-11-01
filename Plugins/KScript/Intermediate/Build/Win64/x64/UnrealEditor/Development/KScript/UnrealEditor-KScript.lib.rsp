@@ -1,0 +1,13 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UnrealEditor-KScript.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"D:/Develop/Koromosoft/UEKScript/Intermediate/Build/Win64/x64/UEKScriptEditor/Development/UnrealEd/SharedPCH.UnrealEd.Cpp20.h.obj"
+"D:/Develop/Koromosoft/UEKScript/Plugins/KScript/Intermediate/Build/Win64/x64/UnrealEditor/Development/KScript/Module.KScript.cpp.obj"
+"D:/Develop/Koromosoft/UEKScript/Plugins/KScript/Intermediate/Build/Win64/x64/UnrealEditor/Development/KScript/KScript.cpp.obj"
+"D:/Develop/Koromosoft/UEKScript/Plugins/KScript/Intermediate/Build/Win64/x64/UnrealEditor/Development/KScript/Default.rc2.res"
+/OUT:"D:/Develop/Koromosoft/UEKScript/Plugins/KScript/Intermediate/Build/Win64/x64/UnrealEditor/Development/KScript/UnrealEditor-KScript.lib"

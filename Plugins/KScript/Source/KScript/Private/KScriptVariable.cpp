@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright Koromosoft. All Rights Reserved.
 
 #include "KScriptVariable.h"
 
@@ -8,25 +8,25 @@ UKScriptVariable::UKScriptVariable()
 
 void UKScriptVariable::SetInt(const FString& VarName, int32 Value)
 {
-	Variables.Add(VarName, FKScriptVariableValue(Value));
+	Variables.Emplace(VarName, FKScriptVariableValue(Value));
 	UE_LOG(LogTemp, Verbose, TEXT("KScriptVariable: Set %s = %d"), *VarName, Value);
 }
 
 void UKScriptVariable::SetFloat(const FString& VarName, float Value)
 {
-	Variables.Add(VarName, FKScriptVariableValue(Value));
+	Variables.Emplace(VarName, FKScriptVariableValue(Value));
 	UE_LOG(LogTemp, Verbose, TEXT("KScriptVariable: Set %s = %f"), *VarName, Value);
 }
 
 void UKScriptVariable::SetString(const FString& VarName, const FString& Value)
 {
-	Variables.Add(VarName, FKScriptVariableValue(Value));
+	Variables.Emplace(VarName, FKScriptVariableValue(Value));
 	UE_LOG(LogTemp, Verbose, TEXT("KScriptVariable: Set %s = %s"), *VarName, *Value);
 }
 
 void UKScriptVariable::SetBool(const FString& VarName, bool Value)
 {
-	Variables.Add(VarName, FKScriptVariableValue(Value));
+	Variables.Emplace(VarName, FKScriptVariableValue(Value));
 	UE_LOG(LogTemp, Verbose, TEXT("KScriptVariable: Set %s = %s"), *VarName, Value ? TEXT("true") : TEXT("false"));
 }
 
@@ -95,7 +95,7 @@ const FKScriptVariableValue* UKScriptVariable::GetVariableValue(const FString& V
 
 void UKScriptVariable::SetVariableValue(const FString& VarName, const FKScriptVariableValue& Value)
 {
-	Variables.Add(VarName, Value);
+	Variables.Emplace(VarName, Value);
 }
 
 bool UKScriptVariable::EvaluateSimpleExpression(const FString& Expression, FKScriptVariableValue& OutResult)
@@ -148,11 +148,15 @@ bool UKScriptVariable::EvaluateSimpleExpression(const FString& Expression, FKScr
 	}
 
 	// ドット記法の変数参照（例: f.hp）
-	FKScriptVariableValue VarValue = GetVariableByPath(TrimmedExpr);
-	if (VarValue.Type != EKScriptVariableType::Integer || VarValue.IntValue != 0)
+	if (TrimmedExpr.Contains(TEXT(".")))
 	{
-		OutResult = VarValue;
-		return true;
+		FKScriptVariableValue VarValue = GetVariableByPath(TrimmedExpr);
+		const FKScriptVariableValue* FoundValue = Variables.Find(TrimmedExpr);
+		if (FoundValue)
+		{
+			OutResult = VarValue;
+			return true;
+		}
 	}
 
 	// 簡易的な算術演算（+, -, *, /）
@@ -194,7 +198,8 @@ bool UKScriptVariable::EvaluateSimpleExpression(const FString& Expression, FKScr
 		}
 	}
 
-	// 簡易的な比較演算（==, !=, >, <, >=, <=）
+	// 簡易的な比較演算（==, !=, >=, <=, >, <）
+	// 注: >=, <= を >, < より先にチェックする必要がある
 	for (const TCHAR* Op : { TEXT("=="), TEXT("!="), TEXT(">="), TEXT("<="), TEXT(">"), TEXT("<") })
 	{
 		int32 OpPos = TrimmedExpr.Find(Op);

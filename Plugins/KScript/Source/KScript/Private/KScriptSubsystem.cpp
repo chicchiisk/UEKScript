@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright Koromosoft. All Rights Reserved.
 
 #include "KScriptSubsystem.h"
 #include "KScriptEngine.h"

@@ -158,6 +158,49 @@ public:
 	 */
 	void SetVariableManager(UKScriptVariable* InVariableManager);
 
+	// コマンドクラスから呼ばれるヘルパーメソッド
+
+	/**
+	 * 実行状態を設定
+	 */
+	void SetExecutionState(EKScriptExecutionState NewState) { ExecutionState = NewState; }
+
+	/**
+	 * 現在のコマンドインデックスを取得
+	 */
+	int32 GetCurrentCommandIndex() const { return CurrentCommandIndex; }
+
+	/**
+	 * 現在のコマンドインデックスを設定
+	 */
+	void SetCurrentCommandIndex(int32 NewIndex) { CurrentCommandIndex = NewIndex; }
+
+	/**
+	 * コールスタックにプッシュ
+	 */
+	void PushCallStack(int32 ReturnIndex) { CallStack.Add(ReturnIndex); }
+
+	/**
+	 * コールスタックからポップ
+	 * @return 戻り先のインデックス（スタックが空の場合は-1）
+	 */
+	int32 PopCallStack() { return CallStack.Num() > 0 ? CallStack.Pop() : -1; }
+
+	/**
+	 * [else]または[endif]までスキップ
+	 */
+	void SkipToElseOrEndIf();
+
+	/**
+	 * [endif]までスキップ
+	 */
+	void SkipToEndIf();
+
+	/**
+	 * コマンド配列を取得
+	 */
+	const TArray<FKScriptCommand>& GetCommands() const { return Commands; }
+
 protected:
 	/**
 	 * 命令を実行する
@@ -165,72 +208,15 @@ protected:
 	 */
 	virtual void ExecuteCommand(const FKScriptCommand& Command);
 
-	/**
-	 * テキスト表示命令を実行
-	 */
-	virtual void ExecuteTextCommand(const FKScriptCommand& Command);
-
-	/**
-	 * クリック待ち命令を実行
-	 */
-	virtual void ExecuteWaitClickCommand(const FKScriptCommand& Command);
-
-	/**
-	 * ページ区切り待ち命令を実行
-	 */
-	virtual void ExecuteWaitPageBreakCommand(const FKScriptCommand& Command);
-
-	/**
-	 * 改行命令を実行
-	 */
-	virtual void ExecuteLineBreakCommand(const FKScriptCommand& Command);
-
-	/**
-	 * メッセージクリア命令を実行
-	 */
-	virtual void ExecuteClearMessageCommand(const FKScriptCommand& Command);
-
-	/**
-	 * ジャンプ命令を実行
-	 */
-	virtual void ExecuteJumpCommand(const FKScriptCommand& Command);
-
-	/**
-	 * 条件分岐命令を実行
-	 */
-	virtual void ExecuteIfCommand(const FKScriptCommand& Command);
-
-	/**
-	 * 式評価命令を実行
-	 */
-	virtual void ExecuteEvalCommand(const FKScriptCommand& Command);
-
-	/**
-	 * サブルーチン呼び出し命令を実行
-	 */
-	virtual void ExecuteCallCommand(const FKScriptCommand& Command);
-
-	/**
-	 * サブルーチンから戻る命令を実行
-	 */
-	virtual void ExecuteReturnCommand(const FKScriptCommand& Command);
-
-	/**
-	 * Else命令を実行
-	 */
-	virtual void ExecuteElseCommand(const FKScriptCommand& Command);
-
-	/**
-	 * EndIf命令を実行
-	 */
-	virtual void ExecuteEndIfCommand(const FKScriptCommand& Command);
-
 protected:
 	UPROPERTY()
 	TObjectPtr<UKScriptParser> Parser;
 
 	UPROPERTY()
 	TObjectPtr<UKScriptVariable> VariableManager;
+
+	UPROPERTY()
+	TObjectPtr<class UKScriptCommandFactory> CommandFactory;
 
 	UPROPERTY()
 	TArray<FKScriptCommand> Commands;

@@ -27,6 +27,12 @@ enum class EKScriptCommandType : uint8
 	Else,           // 条件分岐のelse [else]
 	EndIf,          // 条件分岐終了 [endif]
 	Eval,           // 式の評価 [eval]
+	Bg,             // 背景表示 [bg]
+	CharaShow,      // キャラクター表示 [chara_show]
+	CharaHide,      // キャラクター非表示 [chara_hide]
+	PlayBgm,        // BGM再生 [playbgm]
+	StopBgm,        // BGM停止 [stopbgm]
+	PlaySe,         // SE再生 [playse]
 	Unknown         // 不明
 };
 
@@ -158,6 +164,16 @@ public:
 	 */
 	void SetVariableManager(UKScriptVariable* InVariableManager);
 
+	/**
+	 * UIマネージャーを設定する
+	 */
+	void SetUIManager(class UKScriptUIManager* InUIManager);
+
+	/**
+	 * UIマネージャーを取得する
+	 */
+	class UKScriptUIManager* GetUIManager() const { return UIManager; }
+
 	// コマンドクラスから呼ばれるヘルパーメソッド
 
 	/**
@@ -214,6 +230,9 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UKScriptVariable> VariableManager;
+
+	UPROPERTY()
+	TObjectPtr<class UKScriptUIManager> UIManager;
 
 	UPROPERTY()
 	TObjectPtr<class UKScriptCommandFactory> CommandFactory;

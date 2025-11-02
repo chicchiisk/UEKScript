@@ -194,9 +194,24 @@ class KSCRIPTEDITOR_API UKScriptAssetFactory : public UFactory
 - [x] サンプルプロジェクトでの動作確認
 
 ### Phase 2: マルチメディア対応（プラグイン内）
-- [ ] 画像表示システム
-- [ ] 音声再生システム
-- [ ] UI統合（UMG連携）
+- [x] 画像表示システム（KScriptImageManager）
+  - [x] 背景画像の表示・管理
+  - [x] キャラクター画像の表示・管理（複数レイヤー対応）
+  - [x] 画像の不透明度制御
+- [x] 音声再生システム（KScriptAudioManager）
+  - [x] BGM再生・停止機能
+  - [x] SE再生機能
+  - [x] フェードアウト対応
+- [x] UI統合（KScriptUIManager）
+  - [x] テキスト、画像、音声の統合管理
+  - [x] UMG連携（TextBlock、Image、CanvasPanel）
+- [x] 新規コマンド実装
+  - [x] [bg] - 背景表示
+  - [x] [chara_show] - キャラクター表示
+  - [x] [chara_hide] - キャラクター非表示
+  - [x] [playbgm] - BGM再生
+  - [x] [stopbgm] - BGM停止
+  - [x] [playse] - SE再生
 
 ### Phase 3: 高度な機能（プラグイン内）
 - [ ] セーブ/ロードシステム

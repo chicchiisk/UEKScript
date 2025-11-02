@@ -320,6 +320,30 @@ EKScriptCommandType UKScriptParser::GetCommandTypeFromTagName(const FString& Tag
 	{
 		return EKScriptCommandType::Eval;
 	}
+	else if (TagName.Equals(TEXT("bg"), ESearchCase::IgnoreCase))
+	{
+		return EKScriptCommandType::Bg;
+	}
+	else if (TagName.Equals(TEXT("chara_show"), ESearchCase::IgnoreCase))
+	{
+		return EKScriptCommandType::CharaShow;
+	}
+	else if (TagName.Equals(TEXT("chara_hide"), ESearchCase::IgnoreCase))
+	{
+		return EKScriptCommandType::CharaHide;
+	}
+	else if (TagName.Equals(TEXT("playbgm"), ESearchCase::IgnoreCase))
+	{
+		return EKScriptCommandType::PlayBgm;
+	}
+	else if (TagName.Equals(TEXT("stopbgm"), ESearchCase::IgnoreCase))
+	{
+		return EKScriptCommandType::StopBgm;
+	}
+	else if (TagName.Equals(TEXT("playse"), ESearchCase::IgnoreCase))
+	{
+		return EKScriptCommandType::PlaySe;
+	}
 
 	return EKScriptCommandType::Unknown;
 }

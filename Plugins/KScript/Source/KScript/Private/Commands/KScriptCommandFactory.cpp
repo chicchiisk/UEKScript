@@ -23,6 +23,14 @@ void UKScriptCommandFactory::RegisterAllCommands()
 	RegisterCommand<UKScriptEvalCommand>(EKScriptCommandType::Eval);
 	RegisterCommand<UKScriptCallCommand>(EKScriptCommandType::Call);
 	RegisterCommand<UKScriptReturnCommand>(EKScriptCommandType::Return);
+
+	// Phase2: マルチメディアコマンド
+	RegisterCommand<UKScriptBgCommand>(EKScriptCommandType::Bg);
+	RegisterCommand<UKScriptCharaShowCommand>(EKScriptCommandType::CharaShow);
+	RegisterCommand<UKScriptCharaHideCommand>(EKScriptCommandType::CharaHide);
+	RegisterCommand<UKScriptPlayBgmCommand>(EKScriptCommandType::PlayBgm);
+	RegisterCommand<UKScriptStopBgmCommand>(EKScriptCommandType::StopBgm);
+	RegisterCommand<UKScriptPlaySeCommand>(EKScriptCommandType::PlaySe);
 }
 
 

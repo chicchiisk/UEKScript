@@ -161,3 +161,81 @@ public:
 	virtual void Execute(UKScriptEngine* Engine, const FKScriptCommand& Command, UKScriptVariable* VariableManager) override;
 	virtual EKScriptCommandType GetCommandType() const override { return EKScriptCommandType::Return; }
 };
+
+/**
+ * 背景表示コマンド [bg]
+ */
+UCLASS()
+class KSCRIPT_API UKScriptBgCommand : public UKScriptCommandBase
+{
+	GENERATED_BODY()
+
+public:
+	virtual void Execute(UKScriptEngine* Engine, const FKScriptCommand& Command, UKScriptVariable* VariableManager) override;
+	virtual EKScriptCommandType GetCommandType() const override { return EKScriptCommandType::Bg; }
+};
+
+/**
+ * キャラクター表示コマンド [chara_show]
+ */
+UCLASS()
+class KSCRIPT_API UKScriptCharaShowCommand : public UKScriptCommandBase
+{
+	GENERATED_BODY()
+
+public:
+	virtual void Execute(UKScriptEngine* Engine, const FKScriptCommand& Command, UKScriptVariable* VariableManager) override;
+	virtual EKScriptCommandType GetCommandType() const override { return EKScriptCommandType::CharaShow; }
+};
+
+/**
+ * キャラクター非表示コマンド [chara_hide]
+ */
+UCLASS()
+class KSCRIPT_API UKScriptCharaHideCommand : public UKScriptCommandBase
+{
+	GENERATED_BODY()
+
+public:
+	virtual void Execute(UKScriptEngine* Engine, const FKScriptCommand& Command, UKScriptVariable* VariableManager) override;
+	virtual EKScriptCommandType GetCommandType() const override { return EKScriptCommandType::CharaHide; }
+};
+
+/**
+ * BGM再生コマンド [playbgm]
+ */
+UCLASS()
+class KSCRIPT_API UKScriptPlayBgmCommand : public UKScriptCommandBase
+{
+	GENERATED_BODY()
+
+public:
+	virtual void Execute(UKScriptEngine* Engine, const FKScriptCommand& Command, UKScriptVariable* VariableManager) override;
+	virtual EKScriptCommandType GetCommandType() const override { return EKScriptCommandType::PlayBgm; }
+};
+
+/**
+ * BGM停止コマンド [stopbgm]
+ */
+UCLASS()
+class KSCRIPT_API UKScriptStopBgmCommand : public UKScriptCommandBase
+{
+	GENERATED_BODY()
+
+public:
+	virtual void Execute(UKScriptEngine* Engine, const FKScriptCommand& Command, UKScriptVariable* VariableManager) override;
+	virtual EKScriptCommandType GetCommandType() const override { return EKScriptCommandType::StopBgm; }
+};
+
+/**
+ * SE再生コマンド [playse]
+ */
+UCLASS()
+class KSCRIPT_API UKScriptPlaySeCommand : public UKScriptCommandBase
+{
+	GENERATED_BODY()
+
+public:
+	virtual void Execute(UKScriptEngine* Engine, const FKScriptCommand& Command, UKScriptVariable* VariableManager) override;
+	virtual EKScriptCommandType GetCommandType() const override { return EKScriptCommandType::PlaySe; }
+};

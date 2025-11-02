@@ -28,6 +28,7 @@ public class KScript : ModuleRules
 				"Core",
 				"CoreUObject",
 				"Engine",
+				"UMG",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -38,6 +39,7 @@ public class KScript : ModuleRules
 			{
 				"Slate",
 				"SlateCore",
+				"AudioMixer",
 				// ... add private dependencies that you statically link with here ...
 			}
 			);

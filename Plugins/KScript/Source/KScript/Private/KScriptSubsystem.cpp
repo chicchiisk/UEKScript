@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "KScriptSubsystem.h"
+#include "KScript.h"
 #include "KScriptEngine.h"
 #include "KScriptParser.h"
 #include "KScriptVariable.h"
@@ -21,13 +22,12 @@ void UKScriptSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	// エンジンにパーサーと変数管理システムを設定
 	ScriptEngine->SetParser(ScriptParser);
 	ScriptEngine->SetVariableManager(VariableManager);
-
-	UE_LOG(LogTemp, Log, TEXT("KScriptSubsystem: Initialized"));
+	UE_LOG(LogKScript, Log, TEXT("KScriptサブシステムを初期化しました"));
 }
 
 void UKScriptSubsystem::Deinitialize()
 {
-	UE_LOG(LogTemp, Log, TEXT("KScriptSubsystem: Deinitialized"));
+	UE_LOG(LogKScript, Log, TEXT("KScriptサブシステムを終了しました"));
 
 	Super::Deinitialize();
 }
@@ -36,14 +36,14 @@ bool UKScriptSubsystem::LoadAndStartScript(const FString& FilePath)
 {
 	if (!ScriptEngine)
 	{
-		UE_LOG(LogTemp, Error, TEXT("KScriptSubsystem: ScriptEngine is not initialized"));
+		UE_LOG(LogKScript, Error, TEXT("スクリプトエンジンが初期化されていません"));
 		return false;
 	}
 
 	if (ScriptEngine->LoadScriptFromFile(FilePath))
 	{
 		ScriptEngine->Start();
-		UE_LOG(LogTemp, Log, TEXT("KScriptSubsystem: Started script from file: %s"), *FilePath);
+		UE_LOG(LogKScript, Log, TEXT("スクリプトファイルから実行を開始しました: %s"), *FilePath);
 		return true;
 	}
 
@@ -54,14 +54,14 @@ bool UKScriptSubsystem::LoadAndStartScriptFromText(const FString& ScriptText)
 {
 	if (!ScriptEngine)
 	{
-		UE_LOG(LogTemp, Error, TEXT("KScriptSubsystem: ScriptEngine is not initialized"));
+		UE_LOG(LogKScript, Error, TEXT("スクリプトエンジンが初期化されていません"));
 		return false;
 	}
 
 	if (ScriptEngine->LoadScript(ScriptText))
 	{
 		ScriptEngine->Start();
-		UE_LOG(LogTemp, Log, TEXT("KScriptSubsystem: Started script from text"));
+		UE_LOG(LogKScript, Log, TEXT("テキストからスクリプト実行を開始しました"));
 		return true;
 	}
 

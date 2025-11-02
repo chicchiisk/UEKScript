@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "KScriptParser.h"
+#include "KScript.h"
 
 UKScriptParser::UKScriptParser()
 	: CurrentLineNumber(0)
@@ -17,16 +18,15 @@ bool UKScriptParser::Parse(const FString& ScriptText, TArray<FKScriptCommand>& O
 	TArray<FKScriptToken> Tokens;
 	if (!Tokenize(ScriptText, Tokens))
 	{
-		UE_LOG(LogTemp, Error, TEXT("KScriptParser: Tokenization failed"));
+		UE_LOG(LogKScript, Error, TEXT("字句解析に失敗しました"));
 		return false;
 	}
-
-	UE_LOG(LogTemp, Log, TEXT("KScriptParser: Tokenized %d tokens"), Tokens.Num());
+	UE_LOG(LogKScript, Log, TEXT("字句解析完了: トークン数 %d"), Tokens.Num());
 
 	// 構文解析
 	if (!ParseTokens(Tokens, OutCommands, OutLabels))
 	{
-		UE_LOG(LogTemp, Error, TEXT("KScriptParser: Parsing failed"));
+		UE_LOG(LogKScript, Error, TEXT("構文解析に失敗しました"));
 		return false;
 	}
 
@@ -120,7 +120,7 @@ bool UKScriptParser::Tokenize(const FString& ScriptText, TArray<FKScriptToken>& 
 			int32 TagEndPos = RemainingLine.Find(TEXT("]"), ESearchCase::IgnoreCase, ESearchDir::FromStart, TagStartPos);
 			if (TagEndPos == INDEX_NONE)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("KScriptParser: Unclosed tag at line %d"), CurrentLineNumber);
+				UE_LOG(LogKScript, Warning, TEXT("閉じていないタグがあります (行番号: %d)"), CurrentLineNumber);
 				break;
 			}
 
@@ -157,7 +157,7 @@ bool UKScriptParser::ParseTokens(const TArray<FKScriptToken>& Tokens, TArray<FKS
 		{
 			// ラベルを登録（次のコマンドのインデックスを指す）
 			OutLabels.Add(Token.Value, OutCommands.Num());
-			UE_LOG(LogTemp, Verbose, TEXT("KScriptParser: Label '%s' at command index %d"), *Token.Value, OutCommands.Num());
+			UE_LOG(LogKScript, Verbose, TEXT("ラベル登録: '%s' (コマンドインデックス: %d)"), *Token.Value, OutCommands.Num());
 			break;
 		}
 
@@ -205,7 +205,7 @@ bool UKScriptParser::ParseTag(const FString& TagContent, int32 LineNumber, FKScr
 
 	if (!ParseTagParameters(TagContent, TagName, Parameters))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("KScriptParser: Failed to parse tag parameters at line %d"), LineNumber);
+		UE_LOG(LogKScript, Warning, TEXT("タグパラメータの解析に失敗しました (行番号: %d)"), LineNumber);
 		return false;
 	}
 
@@ -224,7 +224,7 @@ bool UKScriptParser::ParseTag(const FString& TagContent, int32 LineNumber, FKScr
 		}
 	}
 
-	UE_LOG(LogTemp, Verbose, TEXT("KScriptParser: Parsed tag '%s' at line %d"), *TagName, LineNumber);
+	UE_LOG(LogKScript, Verbose, TEXT("タグ解析完了: '%s' (行番号: %d)"), *TagName, LineNumber);
 
 	return true;
 }

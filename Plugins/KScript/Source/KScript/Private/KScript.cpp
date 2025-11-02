@@ -2,6 +2,9 @@
 
 #include "KScript.h"
 
+// KScriptログカテゴリの実装
+DEFINE_LOG_CATEGORY(LogKScript);
+
 #define LOCTEXT_NAMESPACE "FKScriptModule"
 
 void FKScriptModule::StartupModule()

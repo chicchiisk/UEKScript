@@ -4,6 +4,9 @@
 
 #include "Modules/ModuleManager.h"
 
+// KScriptログカテゴリの定義
+DECLARE_LOG_CATEGORY_EXTERN(LogKScript, Log, All);
+
 class FKScriptModule : public IModuleInterface
 {
 public:

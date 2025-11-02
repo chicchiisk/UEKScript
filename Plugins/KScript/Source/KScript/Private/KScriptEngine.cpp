@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "KScriptEngine.h"
+#include "KScript.h"
 #include "KScriptParser.h"
 #include "KScriptVariable.h"
 #include "Commands/KScriptCommandFactory.h"
@@ -14,14 +15,14 @@ UKScriptEngine::UKScriptEngine()
 	CurrentCommandIndex = 0;
 
 	// コマンドファクトリーを初期化
-	CommandFactory = NewObject<UKScriptCommandFactory>(this);
+	CommandFactory = CreateDefaultSubobject<UKScriptCommandFactory>(TEXT("CommandFactory"));
 }
 
 bool UKScriptEngine::LoadScript(const FString& ScriptText)
 {
 	if (!Parser)
 	{
-		UE_LOG(LogTemp, Error, TEXT("KScriptEngine: Parser is not set"));
+		UE_LOG(LogKScript, Error, TEXT("パーサーが設定されていません"));
 		return false;
 	}
 
@@ -34,12 +35,12 @@ bool UKScriptEngine::LoadScript(const FString& ScriptText)
 
 	if (Parser->Parse(ScriptText, Commands, Labels))
 	{
-		UE_LOG(LogTemp, Log, TEXT("KScriptEngine: Script loaded successfully. %d commands, %d labels"),
+		UE_LOG(LogKScript, Log, TEXT("スクリプトの読み込みに成功しました。コマンド数: %d, ラベル数: %d"),
 			Commands.Num(), Labels.Num());
 		return true;
 	}
 
-	UE_LOG(LogTemp, Error, TEXT("KScriptEngine: Failed to parse script"));
+	UE_LOG(LogKScript, Error, TEXT("スクリプトの解析に失敗しました"));
 	return false;
 }
 
@@ -48,11 +49,11 @@ bool UKScriptEngine::LoadScriptFromFile(const FString& FilePath)
 	FString ScriptText;
 	if (!FFileHelper::LoadFileToString(ScriptText, *FilePath))
 	{
-		UE_LOG(LogTemp, Error, TEXT("KScriptEngine: Failed to load script file: %s"), *FilePath);
+		UE_LOG(LogKScript, Error, TEXT("スクリプトファイルの読み込みに失敗しました: %s"), *FilePath);
 		return false;
 	}
 
-	UE_LOG(LogTemp, Log, TEXT("KScriptEngine: Loaded script file: %s"), *FilePath);
+	UE_LOG(LogKScript, Log, TEXT("スクリプトファイルを読み込みました: %s"), *FilePath);
 	return LoadScript(ScriptText);
 }
 
@@ -60,13 +61,13 @@ void UKScriptEngine::Start()
 {
 	if (Commands.Num() == 0)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("KScriptEngine: No commands to execute"));
+		UE_LOG(LogKScript, Warning, TEXT("実行するコマンドがありません"));
 		return;
 	}
 
 	CurrentCommandIndex = 0;
 	ExecutionState = EKScriptExecutionState::Running;
-	UE_LOG(LogTemp, Log, TEXT("KScriptEngine: Started execution"));
+	UE_LOG(LogKScript, Log, TEXT("スクリプト実行を開始しました"));
 }
 
 bool UKScriptEngine::Step()
@@ -80,7 +81,7 @@ bool UKScriptEngine::Step()
 	if (CurrentCommandIndex >= Commands.Num())
 	{
 		ExecutionState = EKScriptExecutionState::Finished;
-		UE_LOG(LogTemp, Log, TEXT("KScriptEngine: Execution finished"));
+		UE_LOG(LogKScript, Log, TEXT("スクリプト実行が完了しました"));
 		return false;
 	}
 
@@ -102,7 +103,7 @@ void UKScriptEngine::OnInput()
 	if (ExecutionState == EKScriptExecutionState::WaitingInput)
 	{
 		ExecutionState = EKScriptExecutionState::Running;
-		UE_LOG(LogTemp, Log, TEXT("KScriptEngine: Input received, resuming execution"));
+		UE_LOG(LogKScript, Log, TEXT("入力を受け取りました。実行を再開します"));
 	}
 }
 
@@ -111,7 +112,7 @@ void UKScriptEngine::Pause()
 	if (ExecutionState == EKScriptExecutionState::Running)
 	{
 		ExecutionState = EKScriptExecutionState::Paused;
-		UE_LOG(LogTemp, Log, TEXT("KScriptEngine: Execution paused"));
+		UE_LOG(LogKScript, Log, TEXT("実行を一時停止しました"));
 	}
 }
 
@@ -120,7 +121,7 @@ void UKScriptEngine::Resume()
 	if (ExecutionState == EKScriptExecutionState::Paused)
 	{
 		ExecutionState = EKScriptExecutionState::Running;
-		UE_LOG(LogTemp, Log, TEXT("KScriptEngine: Execution resumed"));
+		UE_LOG(LogKScript, Log, TEXT("実行を再開しました"));
 	}
 }
 
@@ -129,7 +130,7 @@ void UKScriptEngine::Stop()
 	ExecutionState = EKScriptExecutionState::Idle;
 	CurrentCommandIndex = 0;
 	CallStack.Empty();
-	UE_LOG(LogTemp, Log, TEXT("KScriptEngine: Execution stopped"));
+	UE_LOG(LogKScript, Log, TEXT("実行を停止しました"));
 }
 
 bool UKScriptEngine::JumpToLabel(const FString& LabelName)
@@ -138,11 +139,11 @@ bool UKScriptEngine::JumpToLabel(const FString& LabelName)
 	if (TargetIndex)
 	{
 		CurrentCommandIndex = *TargetIndex;
-		UE_LOG(LogTemp, Log, TEXT("KScriptEngine: Jumped to label '%s' (index %d)"), *LabelName, *TargetIndex);
+		UE_LOG(LogKScript, Log, TEXT("ラベル '%s' にジャンプしました (インデックス: %d)"), *LabelName, *TargetIndex);
 		return true;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("KScriptEngine: Label '%s' not found"), *LabelName);
+	UE_LOG(LogKScript, Warning, TEXT("ラベル '%s' が見つかりません"), *LabelName);
 	return false;
 }
 
@@ -168,7 +169,7 @@ void UKScriptEngine::SetVariableManager(UKScriptVariable* InVariableManager)
 
 void UKScriptEngine::ExecuteCommand(const FKScriptCommand& Command)
 {
-	UE_LOG(LogTemp, Verbose, TEXT("KScriptEngine: Executing command type %d at line %d"),
+	UE_LOG(LogKScript, Verbose, TEXT("コマンド実行: タイプ %d, 行番号 %d"),
 		(int32)Command.Type, Command.LineNumber);
 
 	// Commandパターン: コマンドファクトリーから適切なコマンドインスタンスを取得して実行
@@ -181,12 +182,12 @@ void UKScriptEngine::ExecuteCommand(const FKScriptCommand& Command)
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("KScriptEngine: No handler for command type %d"), (int32)Command.Type);
+			UE_LOG(LogKScript, Warning, TEXT("コマンドタイプ %d のハンドラーが見つかりません"), (int32)Command.Type);
 		}
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("KScriptEngine: CommandFactory is not initialized"));
+		UE_LOG(LogKScript, Error, TEXT("コマンドファクトリーが初期化されていません"));
 	}
 }
 

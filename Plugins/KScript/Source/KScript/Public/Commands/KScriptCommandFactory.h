@@ -36,9 +36,16 @@ protected:
 	/**
 	 * コマンドを登録
 	 * @param CommandType コマンドタイプ
-	 * @param CommandClass コマンドクラス
+	 * @tparam TCommandClass コマンドクラス（UKScriptCommandBaseを継承している必要がある）
 	 */
-	void RegisterCommand(EKScriptCommandType CommandType, TSubclassOf<UKScriptCommandBase> CommandClass);
+	template <class TCommandClass>
+		requires std::is_base_of_v<UKScriptCommandBase, TCommandClass>
+	void RegisterCommand(EKScriptCommandType CommandType)
+	{
+		FString CommandName = FString::Printf(TEXT("Command_%d"), (int32)CommandType);
+		UKScriptCommandBase* CommandInstance = CreateDefaultSubobject<TCommandClass>(*CommandName);
+		CommandMap.Add(CommandType, CommandInstance);
+	}
 
 protected:
 	// コマンドタイプとコマンドインスタンスのマップ

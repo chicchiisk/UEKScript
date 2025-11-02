@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "Commands/KScriptCommandFactory.h"
+#include "KScript.h"
 #include "Commands/KScriptCommands.h"
 
 UKScriptCommandFactory::UKScriptCommandFactory()
@@ -10,28 +11,20 @@ UKScriptCommandFactory::UKScriptCommandFactory()
 
 void UKScriptCommandFactory::RegisterAllCommands()
 {
-	RegisterCommand(EKScriptCommandType::Text, UKScriptTextCommand::StaticClass());
-	RegisterCommand(EKScriptCommandType::WaitClick, UKScriptWaitClickCommand::StaticClass());
-	RegisterCommand(EKScriptCommandType::WaitPageBreak, UKScriptWaitPageBreakCommand::StaticClass());
-	RegisterCommand(EKScriptCommandType::LineBreak, UKScriptLineBreakCommand::StaticClass());
-	RegisterCommand(EKScriptCommandType::ClearMessage, UKScriptClearMessageCommand::StaticClass());
-	RegisterCommand(EKScriptCommandType::Jump, UKScriptJumpCommand::StaticClass());
-	RegisterCommand(EKScriptCommandType::If, UKScriptIfCommand::StaticClass());
-	RegisterCommand(EKScriptCommandType::Else, UKScriptElseCommand::StaticClass());
-	RegisterCommand(EKScriptCommandType::EndIf, UKScriptEndIfCommand::StaticClass());
-	RegisterCommand(EKScriptCommandType::Eval, UKScriptEvalCommand::StaticClass());
-	RegisterCommand(EKScriptCommandType::Call, UKScriptCallCommand::StaticClass());
-	RegisterCommand(EKScriptCommandType::Return, UKScriptReturnCommand::StaticClass());
+	RegisterCommand<UKScriptTextCommand>(EKScriptCommandType::Text);
+	RegisterCommand<UKScriptWaitClickCommand>(EKScriptCommandType::WaitClick);
+	RegisterCommand<UKScriptWaitPageBreakCommand>(EKScriptCommandType::WaitPageBreak);
+	RegisterCommand<UKScriptLineBreakCommand>(EKScriptCommandType::LineBreak);
+	RegisterCommand<UKScriptClearMessageCommand>(EKScriptCommandType::ClearMessage);
+	RegisterCommand<UKScriptJumpCommand>(EKScriptCommandType::Jump);
+	RegisterCommand<UKScriptIfCommand>(EKScriptCommandType::If);
+	RegisterCommand<UKScriptElseCommand>(EKScriptCommandType::Else);
+	RegisterCommand<UKScriptEndIfCommand>(EKScriptCommandType::EndIf);
+	RegisterCommand<UKScriptEvalCommand>(EKScriptCommandType::Eval);
+	RegisterCommand<UKScriptCallCommand>(EKScriptCommandType::Call);
+	RegisterCommand<UKScriptReturnCommand>(EKScriptCommandType::Return);
 }
 
-void UKScriptCommandFactory::RegisterCommand(EKScriptCommandType CommandType, TSubclassOf<UKScriptCommandBase> CommandClass)
-{
-	if (CommandClass)
-	{
-		UKScriptCommandBase* CommandInstance = NewObject<UKScriptCommandBase>(this, CommandClass);
-		CommandMap.Add(CommandType, CommandInstance);
-	}
-}
 
 UKScriptCommandBase* UKScriptCommandFactory::GetCommand(EKScriptCommandType CommandType)
 {
@@ -40,7 +33,7 @@ UKScriptCommandBase* UKScriptCommandFactory::GetCommand(EKScriptCommandType Comm
 	{
 		return *Command;
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("KScriptCommandFactory: No command registered for type %d"), (int32)CommandType);
+	
+	UE_LOG(LogKScript, Warning, TEXT("コマンドタイプ %d に対応するコマンドが登録されていません"), (int32)CommandType);
 	return nullptr;
 }

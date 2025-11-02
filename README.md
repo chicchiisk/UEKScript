@@ -162,6 +162,21 @@ class KSCRIPTEDITOR_API UKScriptAssetFactory : public UFactory
    - 参考URL: https://tyrano.jp/
    - タグリファレンス：https://tyrano.jp/tag/#chara_ptext
 
+### コーディング規約
+
+#### ログ出力
+- **ログカテゴリ**: `LogKScript`を使用してください（`LogTemp`は使用禁止）
+- **ログメッセージ**: 日本語で記述してください
+- **使用例**:
+  ```cpp
+  // 正しい例
+  UE_LOG(LogKScript, Log, TEXT("スクリプトの読み込みに成功しました"));
+  UE_LOG(LogKScript, Error, TEXT("パーサーが初期化されていません"));
+  
+  // 誤った例（使用禁止）
+  UE_LOG(LogTemp, Log, TEXT("Script loaded"));  // LogTempと英語は使わない
+  ```
+
 ### 実装時の注意点
 
 - **パフォーマンス**: UE5のガベージコレクションを考慮したメモリ管理

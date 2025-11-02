@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "KScriptVariable.h"
+#include "KScript.h"
 
 UKScriptVariable::UKScriptVariable()
 {
@@ -9,25 +10,25 @@ UKScriptVariable::UKScriptVariable()
 void UKScriptVariable::SetInt(const FString& VarName, int32 Value)
 {
 	Variables.FindOrAdd(VarName) = FKScriptVariableValue(Value);
-	UE_LOG(LogTemp, Verbose, TEXT("KScriptVariable: Set %s = %d"), *VarName, Value);
+	UE_LOG(LogKScript, Verbose, TEXT("変数を設定: %s = %d"), *VarName, Value);
 }
 
 void UKScriptVariable::SetFloat(const FString& VarName, float Value)
 {
 	Variables.FindOrAdd(VarName) = FKScriptVariableValue(Value);
-	UE_LOG(LogTemp, Verbose, TEXT("KScriptVariable: Set %s = %f"), *VarName, Value);
+	UE_LOG(LogKScript, Verbose, TEXT("変数を設定: %s = %f"), *VarName, Value);
 }
 
 void UKScriptVariable::SetString(const FString& VarName, const FString& Value)
 {
 	Variables.FindOrAdd(VarName) = FKScriptVariableValue(Value);
-	UE_LOG(LogTemp, Verbose, TEXT("KScriptVariable: Set %s = %s"), *VarName, *Value);
+	UE_LOG(LogKScript, Verbose, TEXT("変数を設定: %s = %s"), *VarName, *Value);
 }
 
 void UKScriptVariable::SetBool(const FString& VarName, bool Value)
 {
 	Variables.FindOrAdd(VarName) = FKScriptVariableValue(Value);
-	UE_LOG(LogTemp, Verbose, TEXT("KScriptVariable: Set %s = %s"), *VarName, Value ? TEXT("true") : TEXT("false"));
+	UE_LOG(LogKScript, Verbose, TEXT("変数を設定: %s = %s"), *VarName, Value ? TEXT("true") : TEXT("false"));
 }
 
 int32 UKScriptVariable::GetInt(const FString& VarName, int32 DefaultValue) const
@@ -62,13 +63,13 @@ bool UKScriptVariable::HasVariable(const FString& VarName) const
 void UKScriptVariable::RemoveVariable(const FString& VarName)
 {
 	Variables.Remove(VarName);
-	UE_LOG(LogTemp, Verbose, TEXT("KScriptVariable: Removed %s"), *VarName);
+	UE_LOG(LogKScript, Verbose, TEXT("変数を削除: %s"), *VarName);
 }
 
 void UKScriptVariable::ClearAll()
 {
 	Variables.Empty();
-	UE_LOG(LogTemp, Log, TEXT("KScriptVariable: Cleared all variables"));
+	UE_LOG(LogKScript, Log, TEXT("すべての変数をクリアしました"));
 }
 
 bool UKScriptVariable::EvaluateExpression(const FString& Expression, FKScriptVariableValue& OutResult)
@@ -279,7 +280,7 @@ bool UKScriptVariable::EvaluateSimpleExpression(const FString& Expression, FKScr
 		}
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("KScriptVariable: Failed to evaluate expression: %s"), *Expression);
+	UE_LOG(LogKScript, Warning, TEXT("式の評価に失敗しました: %s"), *Expression);
 	return false;
 }
 

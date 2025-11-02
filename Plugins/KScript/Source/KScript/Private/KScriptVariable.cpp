@@ -8,25 +8,25 @@ UKScriptVariable::UKScriptVariable()
 
 void UKScriptVariable::SetInt(const FString& VarName, int32 Value)
 {
-	Variables.Add(VarName, FKScriptVariableValue(Value));
+	Variables.FindOrAdd(VarName) = FKScriptVariableValue(Value);
 	UE_LOG(LogTemp, Verbose, TEXT("KScriptVariable: Set %s = %d"), *VarName, Value);
 }
 
 void UKScriptVariable::SetFloat(const FString& VarName, float Value)
 {
-	Variables.Add(VarName, FKScriptVariableValue(Value));
+	Variables.FindOrAdd(VarName) = FKScriptVariableValue(Value);
 	UE_LOG(LogTemp, Verbose, TEXT("KScriptVariable: Set %s = %f"), *VarName, Value);
 }
 
 void UKScriptVariable::SetString(const FString& VarName, const FString& Value)
 {
-	Variables.Add(VarName, FKScriptVariableValue(Value));
+	Variables.FindOrAdd(VarName) = FKScriptVariableValue(Value);
 	UE_LOG(LogTemp, Verbose, TEXT("KScriptVariable: Set %s = %s"), *VarName, *Value);
 }
 
 void UKScriptVariable::SetBool(const FString& VarName, bool Value)
 {
-	Variables.Add(VarName, FKScriptVariableValue(Value));
+	Variables.FindOrAdd(VarName) = FKScriptVariableValue(Value);
 	UE_LOG(LogTemp, Verbose, TEXT("KScriptVariable: Set %s = %s"), *VarName, Value ? TEXT("true") : TEXT("false"));
 }
 
@@ -95,7 +95,7 @@ const FKScriptVariableValue* UKScriptVariable::GetVariableValue(const FString& V
 
 void UKScriptVariable::SetVariableValue(const FString& VarName, const FKScriptVariableValue& Value)
 {
-	Variables.Add(VarName, Value);
+	Variables.FindOrAdd(VarName) = Value;
 }
 
 bool UKScriptVariable::EvaluateSimpleExpression(const FString& Expression, FKScriptVariableValue& OutResult)
@@ -148,21 +148,40 @@ bool UKScriptVariable::EvaluateSimpleExpression(const FString& Expression, FKScr
 	}
 
 	// ドット記法の変数参照（例: f.hp）
-	FKScriptVariableValue VarValue = GetVariableByPath(TrimmedExpr);
-	if (VarValue.Type != EKScriptVariableType::Integer || VarValue.IntValue != 0)
+	// 変数が存在するかチェックしてから値を取得
+	if (Variables.Contains(TrimmedExpr))
 	{
-		OutResult = VarValue;
+		OutResult = GetVariableByPath(TrimmedExpr);
 		return true;
 	}
 
-	// 簡易的な算術演算（+, -, *, /）
-	for (const TCHAR* Op : { TEXT("+"), TEXT("-"), TEXT("*"), TEXT("/") })
+	// 算術演算子を検索（文字列リテラル内を除く）
+	auto FindOperatorOutsideQuotes = [](const FString& Expr, const TCHAR* Op) -> int32
 	{
-		int32 OpPos = TrimmedExpr.Find(Op);
+		bool InQuotes = false;
+		for (int32 i = 0; i < Expr.Len(); ++i)
+		{
+			if (Expr[i] == TEXT('"'))
+			{
+				InQuotes = !InQuotes;
+			}
+			else if (!InQuotes && FCString::Strncmp(&Expr[i], Op, FCString::Strlen(Op)) == 0)
+			{
+				return i;
+			}
+		}
+		return INDEX_NONE;
+	};
+
+	// 簡易的な算術演算（優先順位を考慮: 低い順に +, - → *, /）
+	// 優先順位の低い演算子（+, -）を先に検索
+	for (const TCHAR* Op : { TEXT("+"), TEXT("-") })
+	{
+		int32 OpPos = FindOperatorOutsideQuotes(TrimmedExpr, Op);
 		if (OpPos != INDEX_NONE)
 		{
 			FString Left = TrimmedExpr.Left(OpPos).TrimStartAndEnd();
-			FString Right = TrimmedExpr.Mid(OpPos + 1).TrimStartAndEnd();
+			FString Right = TrimmedExpr.Mid(OpPos + FCString::Strlen(Op)).TrimStartAndEnd();
 
 			FKScriptVariableValue LeftValue, RightValue;
 			if (EvaluateSimpleExpression(Left, LeftValue) && EvaluateSimpleExpression(Right, RightValue))
@@ -175,7 +194,38 @@ bool UKScriptVariable::EvaluateSimpleExpression(const FString& Expression, FKScr
 					ResultNum = LeftNum + RightNum;
 				else if (FCString::Strcmp(Op, TEXT("-")) == 0)
 					ResultNum = LeftNum - RightNum;
-				else if (FCString::Strcmp(Op, TEXT("*")) == 0)
+
+				// 結果が整数の場合は整数型で返す
+				if (FMath::IsNearlyEqual(ResultNum, FMath::RoundToFloat(ResultNum)))
+				{
+					OutResult = FKScriptVariableValue(static_cast<int32>(ResultNum));
+				}
+				else
+				{
+					OutResult = FKScriptVariableValue(ResultNum);
+				}
+				return true;
+			}
+		}
+	}
+
+	// 優先順位の高い演算子（*, /）
+	for (const TCHAR* Op : { TEXT("*"), TEXT("/") })
+	{
+		int32 OpPos = FindOperatorOutsideQuotes(TrimmedExpr, Op);
+		if (OpPos != INDEX_NONE)
+		{
+			FString Left = TrimmedExpr.Left(OpPos).TrimStartAndEnd();
+			FString Right = TrimmedExpr.Mid(OpPos + FCString::Strlen(Op)).TrimStartAndEnd();
+
+			FKScriptVariableValue LeftValue, RightValue;
+			if (EvaluateSimpleExpression(Left, LeftValue) && EvaluateSimpleExpression(Right, RightValue))
+			{
+				float LeftNum = LeftValue.AsFloat();
+				float RightNum = RightValue.AsFloat();
+				float ResultNum = 0.0f;
+
+				if (FCString::Strcmp(Op, TEXT("*")) == 0)
 					ResultNum = LeftNum * RightNum;
 				else if (FCString::Strcmp(Op, TEXT("/")) == 0)
 					ResultNum = RightNum != 0.0f ? LeftNum / RightNum : 0.0f;
@@ -195,9 +245,10 @@ bool UKScriptVariable::EvaluateSimpleExpression(const FString& Expression, FKScr
 	}
 
 	// 簡易的な比較演算（==, !=, >, <, >=, <=）
+	// 文字列リテラル内の演算子を除外
 	for (const TCHAR* Op : { TEXT("=="), TEXT("!="), TEXT(">="), TEXT("<="), TEXT(">"), TEXT("<") })
 	{
-		int32 OpPos = TrimmedExpr.Find(Op);
+		int32 OpPos = FindOperatorOutsideQuotes(TrimmedExpr, Op);
 		if (OpPos != INDEX_NONE)
 		{
 			FString Left = TrimmedExpr.Left(OpPos).TrimStartAndEnd();

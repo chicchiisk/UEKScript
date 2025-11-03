@@ -27,6 +27,11 @@ void SKScriptViewer::Construct(const FArguments& InArgs)
 		*ScriptTextPtr = KScriptAsset->GetScriptText();
 	}
 
+	// ファイル監視の初期化
+	bTempFileOpen = false;
+	TempFilePath = TEXT("");
+	LastFileTimestamp = FDateTime::MinValue();
+
 	// UIレイアウトを構築
 	ChildSlot
 	[
@@ -147,12 +152,19 @@ FReply SKScriptViewer::OnOpenInVSCodeClicked()
 		return FReply::Handled();
 	}
 
-	// 一時ファイルを作成
-	FString TempFilePath = FPaths::CreateTempFilename(*FPaths::ProjectSavedDir(), TEXT("KScript_"), TEXT(".ks"));
+	// 一時ファイルを作成（新規または既存のパスを使用）
+	if (TempFilePath.IsEmpty())
+	{
+		TempFilePath = FPaths::CreateTempFilename(*FPaths::ProjectSavedDir(), TEXT("KScript_"), TEXT(".ks"));
+	}
 
 	// スクリプトテキストを一時ファイルに保存
 	if (FFileHelper::SaveStringToFile(*ScriptTextPtr, *TempFilePath))
 	{
+		// ファイルのタイムスタンプを記録
+		LastFileTimestamp = IFileManager::Get().GetTimeStamp(*TempFilePath);
+		bTempFileOpen = true;
+
 		// VSCodeのパスを探す
 		FString VSCodePath;
 
@@ -239,6 +251,51 @@ void SKScriptViewer::OnTextChanged(const FText& NewText)
 FText SKScriptViewer::GetScriptText() const
 {
 	return FText::FromString(*ScriptTextPtr);
+}
+
+void SKScriptViewer::Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime)
+{
+	SCompoundWidget::Tick(AllottedGeometry, InCurrentTime, InDeltaTime);
+
+	// 一時ファイルが開かれている場合のみチェック
+	if (bTempFileOpen && !TempFilePath.IsEmpty())
+	{
+		// ファイルが存在するかチェック
+		if (FPaths::FileExists(TempFilePath))
+		{
+			// ファイルのタイムスタンプを取得
+			FDateTime CurrentTimestamp = IFileManager::Get().GetTimeStamp(*TempFilePath);
+
+			// タイムスタンプが変更されていたら、ファイルを読み込む
+			if (CurrentTimestamp > LastFileTimestamp)
+			{
+				LoadFromTempFile();
+				LastFileTimestamp = CurrentTimestamp;
+			}
+		}
+	}
+}
+
+void SKScriptViewer::LoadFromTempFile()
+{
+	if (!KScriptAsset.IsValid() || TempFilePath.IsEmpty())
+	{
+		return;
+	}
+
+	// 一時ファイルからテキストを読み込み
+	FString LoadedText;
+	if (FFileHelper::LoadFileToString(LoadedText, *TempFilePath))
+	{
+		// テキストを更新
+		*ScriptTextPtr = LoadedText;
+
+		// アセットにも自動保存
+		KScriptAsset->SetScriptText(LoadedText);
+		KScriptAsset->MarkPackageDirty();
+
+		UE_LOG(LogTemp, Log, TEXT("KScriptViewer: VSCodeからの変更を自動的にアセットに反映しました"));
+	}
 }
 
 #undef LOCTEXT_NAMESPACE

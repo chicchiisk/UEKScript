@@ -23,12 +23,24 @@ public:
 	/** ウィンドウを作成して表示 */
 	static void OpenViewer(UKScriptAsset* InAsset);
 
+	/** Tick - ファイル変更を監視 */
+	virtual void Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime) override;
+
 private:
 	/** 編集対象のKScriptアセット */
 	TWeakObjectPtr<UKScriptAsset> KScriptAsset;
 
 	/** テキストボックスに表示するテキスト */
 	TSharedPtr<FString> ScriptTextPtr;
+
+	/** VSCodeで開いている一時ファイルのパス */
+	FString TempFilePath;
+
+	/** 最後にチェックした一時ファイルのタイムスタンプ */
+	FDateTime LastFileTimestamp;
+
+	/** 一時ファイルが現在開かれているか */
+	bool bTempFileOpen;
 
 	/** VSCodeで開くボタンがクリックされた時の処理 */
 	FReply OnOpenInVSCodeClicked();
@@ -44,4 +56,7 @@ private:
 
 	/** テキストボックスのテキストを取得 */
 	FText GetScriptText() const;
+
+	/** 一時ファイルから変更を読み込む */
+	void LoadFromTempFile();
 };

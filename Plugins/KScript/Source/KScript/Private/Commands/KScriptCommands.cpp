@@ -3,8 +3,12 @@
 #include "Commands/KScriptCommands.h"
 #include "KScript.h"
 #include "KScriptEngine.h"
+#include "KScriptUIManager.h"
+#include "KScriptAudioManager.h"
+#include "KScriptImageManager.h"
 #include "KScriptVariable.h"
 
+class UKScriptAudioManager;
 // テキスト表示コマンド
 void UKScriptTextCommand::Execute(UKScriptEngine* Engine, const FKScriptCommand& Command, UKScriptVariable* VariableManager)
 {

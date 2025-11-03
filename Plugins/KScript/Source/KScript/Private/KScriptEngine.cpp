@@ -4,6 +4,7 @@
 #include "KScript.h"
 #include "KScriptParser.h"
 #include "KScriptVariable.h"
+#include "KScriptAsset.h"
 #include "Commands/KScriptCommandFactory.h"
 #include "Commands/KScriptCommandBase.h"
 #include "Misc/FileHelper.h"
@@ -54,6 +55,24 @@ bool UKScriptEngine::LoadScriptFromFile(const FString& FilePath)
 	}
 
 	UE_LOG(LogKScript, Log, TEXT("スクリプトファイルを読み込みました: %s"), *FilePath);
+	return LoadScript(ScriptText);
+}
+
+bool UKScriptEngine::LoadScriptFromAsset(UKScriptAsset* ScriptAsset)
+{
+	if (!ScriptAsset)
+	{
+		UE_LOG(LogKScript, Error, TEXT("スクリプトアセットがnullです"));
+		return false;
+	}
+
+	FString ScriptText = ScriptAsset->GetScriptText();
+	if (ScriptText.IsEmpty())
+	{
+		UE_LOG(LogKScript, Warning, TEXT("スクリプトアセット '%s' のテキストが空です"), *ScriptAsset->GetName());
+	}
+
+	UE_LOG(LogKScript, Log, TEXT("スクリプトアセットを読み込みました: %s"), *ScriptAsset->GetName());
 	return LoadScript(ScriptText);
 }
 

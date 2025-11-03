@@ -54,6 +54,14 @@ public:
 	bool LoadAndStartScript(const FString& FilePath);
 
 	/**
+	 * KScriptアセットからスクリプトをロードして実行
+	 * @param ScriptAsset KScriptアセット
+	 * @return ロード成功時true
+	 */
+	UFUNCTION(BlueprintCallable, Category = "KScript", meta = (DisplayName = "Load And Start Script (Asset)"))
+	bool LoadAndStartScriptFromAsset(class UKScriptAsset* ScriptAsset);
+
+	/**
 	 * スクリプトテキストをロードして実行
 	 * @param ScriptText スクリプトテキスト
 	 * @return ロード成功時true

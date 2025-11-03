@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Widgets/SCompoundWidget.h"
-#include "Widgets/DeclareSlateDelegates.h"
 
 class UKScriptAsset;
 

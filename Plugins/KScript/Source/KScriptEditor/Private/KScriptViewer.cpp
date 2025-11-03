@@ -8,7 +8,6 @@
 #include "Widgets/Layout/SBorder.h"
 #include "Widgets/SWindow.h"
 #include "Framework/Application/SlateApplication.h"
-#include "EditorStyleSet.h"
 #include "Styling/AppStyle.h"
 #include "Misc/FileHelper.h"
 #include "HAL/PlatformProcess.h"

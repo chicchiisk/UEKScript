@@ -167,11 +167,6 @@ void UKScriptEngine::SetVariableManager(UKScriptVariable* InVariableManager)
 	VariableManager = InVariableManager;
 }
 
-void UKScriptEngine::SetUIManager(UKScriptUIManager* InUIManager)
-{
-	UIManager = InUIManager;
-}
-
 void UKScriptEngine::ExecuteCommand(const FKScriptCommand& Command)
 {
 	UE_LOG(LogKScript, Verbose, TEXT("コマンド実行: タイプ %d, 行番号 %d"),

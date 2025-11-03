@@ -2,10 +2,7 @@
 
 #include "AssetTypeActions_KScriptAsset.h"
 #include "KScriptAsset.h"
-#include "Misc/FileHelper.h"
-#include "HAL/PlatformApplicationMisc.h"
-#include "DesktopPlatformModule.h"
-#include "Interfaces/IMainFrameModule.h"
+#include "KScriptViewer.h"
 
 #define LOCTEXT_NAMESPACE "AssetTypeActions_KScriptAsset"
 
@@ -33,19 +30,13 @@ uint32 FAssetTypeActions_KScriptAsset::GetCategories()
 
 void FAssetTypeActions_KScriptAsset::OpenAssetEditor(const TArray<UObject*>& InObjects, TSharedPtr<class IToolkitHost> EditWithinLevelEditor)
 {
-	// 簡易的なエディタ実装：外部エディタで開く
+	// KScriptViewerウィンドウを開く
 	for (UObject* Obj : InObjects)
 	{
 		UKScriptAsset* Asset = Cast<UKScriptAsset>(Obj);
 		if (Asset)
 		{
-			// 一時ファイルに書き出して、システムのデフォルトエディタで開く
-			FString TempFilePath = FPaths::CreateTempFilename(*FPaths::ProjectSavedDir(), TEXT("KScript_"), TEXT(".ks"));
-
-			if (FFileHelper::SaveStringToFile(Asset->GetScriptText(), *TempFilePath))
-			{
-				FPlatformProcess::LaunchFileInDefaultExternalApplication(*TempFilePath, nullptr, ELaunchVerb::Edit);
-			}
+			SKScriptViewer::OpenViewer(Asset);
 		}
 	}
 }

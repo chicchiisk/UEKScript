@@ -206,11 +206,31 @@ void UKScriptBgCommand::Execute(UKScriptEngine* Engine, const FKScriptCommand& C
 	if (Storage)
 	{
 		UE_LOG(LogKScript, Log, TEXT("[背景表示] ファイル: %s"), **Storage);
-		// TODO: 背景画像の読み込みと表示
-		// - リソースパスの解決
-		// - テクスチャの読み込み
-		// - 背景レイヤーへの適用
-		// - トランジション効果の適用（time, method パラメータなど）
+
+		// UIManagerを使用して背景画像を表示
+		if (Engine && Engine->GetUIManager())
+		{
+			UKScriptImageManager* ImageManager = Engine->GetUIManager()->GetImageManager();
+			if (ImageManager)
+			{
+				if (ImageManager->SetBackground(*Storage))
+				{
+					UE_LOG(LogKScript, Log, TEXT("背景画像の表示に成功しました"));
+				}
+				else
+				{
+					UE_LOG(LogKScript, Warning, TEXT("背景画像の表示に失敗しました: %s"), **Storage);
+				}
+			}
+			else
+			{
+				UE_LOG(LogKScript, Error, TEXT("ImageManagerが初期化されていません"));
+			}
+		}
+		else
+		{
+			UE_LOG(LogKScript, Error, TEXT("UIManagerが設定されていません"));
+		}
 	}
 	else
 	{
@@ -224,16 +244,49 @@ void UKScriptCharaShowCommand::Execute(UKScriptEngine* Engine, const FKScriptCom
 	const FString* Name = Command.Parameters.Find(TEXT("name"));
 	const FString* Storage = Command.Parameters.Find(TEXT("storage"));
 	const FString* Layer = Command.Parameters.Find(TEXT("layer"));
-	
+
 	if (Name && Storage)
 	{
-		UE_LOG(LogKScript, Log, TEXT("[キャラクター表示] 名前: %s, ファイル: %s, レイヤー: %s"), 
+		UE_LOG(LogKScript, Log, TEXT("[キャラクター表示] 名前: %s, ファイル: %s, レイヤー: %s"),
 			**Name, **Storage, Layer ? **Layer : TEXT("デフォルト"));
-		// TODO: キャラクター画像の読み込みと表示
-		// - リソースパスの解決
-		// - テクスチャの読み込み
-		// - キャラクターレイヤーへの配置
-		// - 位置、サイズ、透明度などの設定（pos, size, opacity パラメータなど）
+
+		// 位置パラメータを取得（オプション）
+		FVector2D Position = FVector2D::ZeroVector;
+		const FString* Left = Command.Parameters.Find(TEXT("left"));
+		const FString* Top = Command.Parameters.Find(TEXT("top"));
+		if (Left)
+		{
+			Position.X = FCString::Atof(**Left);
+		}
+		if (Top)
+		{
+			Position.Y = FCString::Atof(**Top);
+		}
+
+		// UIManagerを使用してキャラクター画像を表示
+		if (Engine && Engine->GetUIManager())
+		{
+			UKScriptImageManager* ImageManager = Engine->GetUIManager()->GetImageManager();
+			if (ImageManager)
+			{
+				if (ImageManager->ShowCharacter(*Name, *Storage, Position))
+				{
+					UE_LOG(LogKScript, Log, TEXT("キャラクター画像の表示に成功しました"));
+				}
+				else
+				{
+					UE_LOG(LogKScript, Warning, TEXT("キャラクター画像の表示に失敗しました: %s"), **Name);
+				}
+			}
+			else
+			{
+				UE_LOG(LogKScript, Error, TEXT("ImageManagerが初期化されていません"));
+			}
+		}
+		else
+		{
+			UE_LOG(LogKScript, Error, TEXT("UIManagerが設定されていません"));
+		}
 	}
 	else
 	{
@@ -246,15 +299,36 @@ void UKScriptCharaHideCommand::Execute(UKScriptEngine* Engine, const FKScriptCom
 {
 	const FString* Name = Command.Parameters.Find(TEXT("name"));
 	const FString* Layer = Command.Parameters.Find(TEXT("layer"));
-	
+
 	if (Name)
 	{
-		UE_LOG(LogKScript, Log, TEXT("[キャラクター非表示] 名前: %s, レイヤー: %s"), 
+		UE_LOG(LogKScript, Log, TEXT("[キャラクター非表示] 名前: %s, レイヤー: %s"),
 			**Name, Layer ? **Layer : TEXT("デフォルト"));
-		// TODO: キャラクターの非表示処理
-		// - 指定されたキャラクターの検索
-		// - フェードアウトなどのトランジション適用
-		// - レイヤーからの削除
+
+		// UIManagerを使用してキャラクター画像を非表示
+		if (Engine && Engine->GetUIManager())
+		{
+			UKScriptImageManager* ImageManager = Engine->GetUIManager()->GetImageManager();
+			if (ImageManager)
+			{
+				if (ImageManager->HideCharacter(*Name))
+				{
+					UE_LOG(LogKScript, Log, TEXT("キャラクター画像の非表示に成功しました"));
+				}
+				else
+				{
+					UE_LOG(LogKScript, Warning, TEXT("キャラクター '%s' が見つかりません"), **Name);
+				}
+			}
+			else
+			{
+				UE_LOG(LogKScript, Error, TEXT("ImageManagerが初期化されていません"));
+			}
+		}
+		else
+		{
+			UE_LOG(LogKScript, Error, TEXT("UIManagerが設定されていません"));
+		}
 	}
 	else
 	{
@@ -267,17 +341,45 @@ void UKScriptPlayBgmCommand::Execute(UKScriptEngine* Engine, const FKScriptComma
 {
 	const FString* Storage = Command.Parameters.Find(TEXT("storage"));
 	const FString* Loop = Command.Parameters.Find(TEXT("loop"));
-	
+
 	if (Storage)
 	{
 		bool bLoop = Loop ? Loop->Equals(TEXT("true"), ESearchCase::IgnoreCase) : true;
-		UE_LOG(LogKScript, Log, TEXT("[BGM再生] ファイル: %s, ループ: %s"), 
+		UE_LOG(LogKScript, Log, TEXT("[BGM再生] ファイル: %s, ループ: %s"),
 			**Storage, bLoop ? TEXT("有効") : TEXT("無効"));
-		// TODO: BGMの再生処理
-		// - オーディオファイルの読み込み
-		// - サウンドコンポーネントでの再生
-		// - ループ設定
-		// - フェードイン処理（fadein パラメータなど）
+
+		// ボリュームパラメータを取得（オプション、デフォルト: 1.0）
+		float Volume = 1.0f;
+		const FString* VolumeStr = Command.Parameters.Find(TEXT("volume"));
+		if (VolumeStr)
+		{
+			Volume = FCString::Atof(**VolumeStr) / 100.0f; // ティラノスクリプトでは0-100の範囲
+		}
+
+		// UIManagerを使用してBGMを再生
+		if (Engine && Engine->GetUIManager())
+		{
+			UKScriptAudioManager* AudioManager = Engine->GetUIManager()->GetAudioManager();
+			if (AudioManager)
+			{
+				if (AudioManager->PlayBGM(*Storage, bLoop, Volume))
+				{
+					UE_LOG(LogKScript, Log, TEXT("BGMの再生に成功しました"));
+				}
+				else
+				{
+					UE_LOG(LogKScript, Warning, TEXT("BGMの再生に失敗しました: %s"), **Storage);
+				}
+			}
+			else
+			{
+				UE_LOG(LogKScript, Error, TEXT("AudioManagerが初期化されていません"));
+			}
+		}
+		else
+		{
+			UE_LOG(LogKScript, Error, TEXT("UIManagerが設定されていません"));
+		}
 	}
 	else
 	{
@@ -289,13 +391,35 @@ void UKScriptPlayBgmCommand::Execute(UKScriptEngine* Engine, const FKScriptComma
 void UKScriptStopBgmCommand::Execute(UKScriptEngine* Engine, const FKScriptCommand& Command, UKScriptVariable* VariableManager)
 {
 	const FString* FadeOut = Command.Parameters.Find(TEXT("fadeout"));
-	
-	UE_LOG(LogKScript, Log, TEXT("[BGM停止] フェードアウト: %s"), 
+
+	UE_LOG(LogKScript, Log, TEXT("[BGM停止] フェードアウト: %s"),
 		FadeOut ? **FadeOut : TEXT("即座"));
-	// TODO: BGMの停止処理
-	// - 現在再生中のBGMの取得
-	// - フェードアウト処理（fadeout パラメータ指定時）
-	// - サウンドの停止
+
+	// フェードアウト時間を取得（オプション、デフォルト: 0.0）
+	float FadeOutDuration = 0.0f;
+	if (FadeOut)
+	{
+		FadeOutDuration = FCString::Atof(**FadeOut) / 1000.0f; // ミリ秒から秒に変換
+	}
+
+	// UIManagerを使用してBGMを停止
+	if (Engine && Engine->GetUIManager())
+	{
+		UKScriptAudioManager* AudioManager = Engine->GetUIManager()->GetAudioManager();
+		if (AudioManager)
+		{
+			AudioManager->StopBGM(FadeOutDuration);
+			UE_LOG(LogKScript, Log, TEXT("BGMの停止に成功しました"));
+		}
+		else
+		{
+			UE_LOG(LogKScript, Error, TEXT("AudioManagerが初期化されていません"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogKScript, Error, TEXT("UIManagerが設定されていません"));
+	}
 }
 
 // SE再生コマンド
@@ -304,17 +428,45 @@ void UKScriptPlaySeCommand::Execute(UKScriptEngine* Engine, const FKScriptComman
 	const FString* Storage = Command.Parameters.Find(TEXT("storage"));
 	const FString* Loop = Command.Parameters.Find(TEXT("loop"));
 	const FString* Buf = Command.Parameters.Find(TEXT("buf"));
-	
+
 	if (Storage)
 	{
 		bool bLoop = Loop ? Loop->Equals(TEXT("true"), ESearchCase::IgnoreCase) : false;
-		UE_LOG(LogKScript, Log, TEXT("[SE再生] ファイル: %s, ループ: %s, バッファ: %s"), 
+		UE_LOG(LogKScript, Log, TEXT("[SE再生] ファイル: %s, ループ: %s, バッファ: %s"),
 			**Storage, bLoop ? TEXT("有効") : TEXT("無効"), Buf ? **Buf : TEXT("デフォルト"));
-		// TODO: SEの再生処理
-		// - オーディオファイルの読み込み
-		// - サウンドコンポーネントでの再生
-		// - ループ設定
-		// - バッファ管理（複数のSEを同時再生する場合）
+
+		// ボリュームパラメータを取得（オプション、デフォルト: 1.0）
+		float Volume = 1.0f;
+		const FString* VolumeStr = Command.Parameters.Find(TEXT("volume"));
+		if (VolumeStr)
+		{
+			Volume = FCString::Atof(**VolumeStr) / 100.0f; // ティラノスクリプトでは0-100の範囲
+		}
+
+		// UIManagerを使用してSEを再生
+		if (Engine && Engine->GetUIManager())
+		{
+			UKScriptAudioManager* AudioManager = Engine->GetUIManager()->GetAudioManager();
+			if (AudioManager)
+			{
+				if (AudioManager->PlaySE(*Storage, Volume))
+				{
+					UE_LOG(LogKScript, Log, TEXT("SEの再生に成功しました"));
+				}
+				else
+				{
+					UE_LOG(LogKScript, Warning, TEXT("SEの再生に失敗しました: %s"), **Storage);
+				}
+			}
+			else
+			{
+				UE_LOG(LogKScript, Error, TEXT("AudioManagerが初期化されていません"));
+			}
+		}
+		else
+		{
+			UE_LOG(LogKScript, Error, TEXT("UIManagerが設定されていません"));
+		}
 	}
 	else
 	{

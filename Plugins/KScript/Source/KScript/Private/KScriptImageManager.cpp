@@ -6,6 +6,8 @@
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Engine/Texture2D.h"
+#include "Blueprint/UserWidget.h"
+#include "Blueprint/WidgetTree.h"
 #include "UObject/ConstructorHelpers.h"
 
 UKScriptImageManager::UKScriptImageManager()
@@ -102,7 +104,15 @@ bool UKScriptImageManager::ShowCharacter(const FString& CharaName, const FString
 	else
 	{
 		// 新しいキャラクターを作成
-		UImage* CharaImage = NewObject<UImage>(CharacterContainer);
+		// UserWidgetのWidgetTreeを使用して適切に構築
+		UUserWidget* OwningWidget = CharacterContainer->GetTypedOuter<UUserWidget>();
+		if (!OwningWidget || !OwningWidget->WidgetTree)
+		{
+			UE_LOG(LogKScript, Error, TEXT("UserWidgetまたはWidgetTreeが見つかりません"));
+			return false;
+		}
+
+		UImage* CharaImage = OwningWidget->WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
 		if (!CharaImage)
 		{
 			UE_LOG(LogKScript, Error, TEXT("キャラクター画像ウィジェットの作成に失敗しました"));

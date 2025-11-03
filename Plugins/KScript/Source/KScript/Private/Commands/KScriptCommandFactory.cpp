@@ -2,7 +2,24 @@
 
 #include "Commands/KScriptCommandFactory.h"
 #include "KScript.h"
-#include "Commands/KScriptCommands.h"
+#include "Commands/KScriptTextCommand.h"
+#include "Commands/KScriptWaitClickCommand.h"
+#include "Commands/KScriptWaitPageBreakCommand.h"
+#include "Commands/KScriptLineBreakCommand.h"
+#include "Commands/KScriptClearMessageCommand.h"
+#include "Commands/KScriptJumpCommand.h"
+#include "Commands/KScriptIfCommand.h"
+#include "Commands/KScriptElseCommand.h"
+#include "Commands/KScriptEndIfCommand.h"
+#include "Commands/KScriptEvalCommand.h"
+#include "Commands/KScriptCallCommand.h"
+#include "Commands/KScriptReturnCommand.h"
+#include "Commands/KScriptBgCommand.h"
+#include "Commands/KScriptCharaShowCommand.h"
+#include "Commands/KScriptCharaHideCommand.h"
+#include "Commands/KScriptPlayBgmCommand.h"
+#include "Commands/KScriptStopBgmCommand.h"
+#include "Commands/KScriptPlaySeCommand.h"
 
 UKScriptCommandFactory::UKScriptCommandFactory()
 {

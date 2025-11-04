@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
+#include "Subsystems/GameInstanceSubsystem.h"
 #include "KScriptUIManager.generated.h"
 
 class UKScriptImageManager;
@@ -14,24 +14,27 @@ class UTextBlock;
 
 /**
  * UI統合管理システム - テキスト、画像、音声を統合管理
+ * GameInstanceSubsystemとして実装
  */
-UCLASS(BlueprintType, Blueprintable)
-class KSCRIPT_API UKScriptUIManager : public UObject
+UCLASS()
+class KSCRIPT_API UKScriptUIManager : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 
 public:
-	UKScriptUIManager();
+	// USubsystem interface
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+	virtual void Deinitialize() override;
+	// End of USubsystem interface
 
 	/**
-	 * 初期化
-	 * @param InWorld ワールドコンテキスト
+	 * UIウィジェットを設定
 	 * @param InMessageText メッセージ表示用のTextBlock
 	 * @param InBackgroundImage 背景用のImageウィジェット
 	 * @param InCharacterContainer キャラクター用のコンテナウィジェット
 	 */
 	UFUNCTION(BlueprintCallable, Category = "KScript|UI")
-	void Initialize(UWorld* InWorld, UTextBlock* InMessageText, UImage* InBackgroundImage, UCanvasPanel* InCharacterContainer);
+	void SetupWidgets(UTextBlock* InMessageText, UImage* InBackgroundImage, UCanvasPanel* InCharacterContainer);
 
 	/**
 	 * テキストを表示
@@ -63,13 +66,13 @@ public:
 	 * 画像マネージャーを取得
 	 */
 	UFUNCTION(BlueprintPure, Category = "KScript|UI")
-	UKScriptImageManager* GetImageManager() const { return ImageManager; }
+	UKScriptImageManager* GetImageManager() const;
 
 	/**
 	 * 音声マネージャーを取得
 	 */
 	UFUNCTION(BlueprintPure, Category = "KScript|UI")
-	UKScriptAudioManager* GetAudioManager() const { return AudioManager; }
+	UKScriptAudioManager* GetAudioManager() const;
 
 	/**
 	 * 現在のメッセージテキストを取得
@@ -78,14 +81,6 @@ public:
 	FString GetCurrentMessage() const { return CurrentMessage; }
 
 protected:
-	// 画像管理システム
-	UPROPERTY()
-	TObjectPtr<UKScriptImageManager> ImageManager;
-
-	// 音声管理システム
-	UPROPERTY()
-	TObjectPtr<UKScriptAudioManager> AudioManager;
-
 	// メッセージ表示用のTextBlock
 	UPROPERTY()
 	TObjectPtr<UTextBlock> MessageText;

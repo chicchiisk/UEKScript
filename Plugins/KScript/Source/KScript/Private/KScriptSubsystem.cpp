@@ -6,6 +6,7 @@
 #include "KScriptParser.h"
 #include "KScriptVariable.h"
 #include "KScriptAsset.h"
+#include "KScriptUIManager.h"
 
 UKScriptSubsystem::UKScriptSubsystem()
 {
@@ -23,6 +24,18 @@ void UKScriptSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	// エンジンにパーサーと変数管理システムを設定
 	ScriptEngine->SetParser(ScriptParser);
 	ScriptEngine->SetVariableManager(VariableManager);
+
+	// UIManagerをSubsystemから取得して設定
+	if (UGameInstance* GameInstance = GetGameInstance())
+	{
+		UKScriptUIManager* UIManager = GameInstance->GetSubsystem<UKScriptUIManager>();
+		if (UIManager)
+		{
+			ScriptEngine->SetUIManager(UIManager);
+			UE_LOG(LogKScript, Log, TEXT("KScriptEngine にUIManagerを設定しました"));
+		}
+	}
+
 	UE_LOG(LogKScript, Log, TEXT("KScriptサブシステムを初期化しました"));
 }
 

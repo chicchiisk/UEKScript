@@ -7,12 +7,13 @@
 #include "KScriptUIManager.h"
 #include "KScriptAudioManager.h"
 
-void UKScriptStopBgmCommand::Execute(UKScriptEngine* Engine, const FKScriptCommand& Command, UKScriptVariable* VariableManager)
+void UKScriptStopBgmCommand::Execute(UKScriptEngine* Engine, const FKScriptCommand& Command,
+                                     UKScriptVariable* VariableManager)
 {
 	const FString* FadeOut = Command.Parameters.Find(TEXT("fadeout"));
 
 	UE_LOG(LogKScript, Log, TEXT("[BGM停止] フェードアウト: %s"),
-		FadeOut ? **FadeOut : TEXT("即座"));
+	       FadeOut ? **FadeOut : TEXT("即座"));
 
 	// フェードアウト時間を取得（オプション、デフォルト: 0.0）
 	float FadeOutDuration = 0.0f;
@@ -22,21 +23,14 @@ void UKScriptStopBgmCommand::Execute(UKScriptEngine* Engine, const FKScriptComma
 	}
 
 	// UIManagerを使用してBGMを停止
-	if (Engine && Engine->GetUIManager())
+	UKScriptAudioManager* AudioManager = GetWorld()->GetSubsystem<UKScriptAudioManager>();
+	if (AudioManager)
 	{
-		UKScriptAudioManager* AudioManager = Engine->GetUIManager()->GetAudioManager();
-		if (AudioManager)
-		{
-			AudioManager->StopBGM(FadeOutDuration);
-			UE_LOG(LogKScript, Log, TEXT("BGMの停止に成功しました"));
-		}
-		else
-		{
-			UE_LOG(LogKScript, Error, TEXT("AudioManagerが初期化されていません"));
-		}
+		AudioManager->StopBGM(FadeOutDuration);
+		UE_LOG(LogKScript, Log, TEXT("BGMの停止に成功しました"));
 	}
 	else
 	{
-		UE_LOG(LogKScript, Error, TEXT("UIManagerが設定されていません"));
+		UE_LOG(LogKScript, Error, TEXT("AudioManagerが初期化されていません"));
 	}
 }

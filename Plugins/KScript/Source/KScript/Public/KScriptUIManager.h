@@ -17,7 +17,7 @@ class UTextBlock;
  * GameInstanceSubsystemとして実装
  */
 UCLASS()
-class KSCRIPT_API UKScriptUIManager : public UGameInstanceSubsystem
+class KSCRIPT_API UKScriptUIManager : public UWorldSubsystem
 {
 	GENERATED_BODY()
 
@@ -30,11 +30,9 @@ public:
 	/**
 	 * UIウィジェットを設定
 	 * @param InMessageText メッセージ表示用のTextBlock
-	 * @param InBackgroundImage 背景用のImageウィジェット
-	 * @param InCharacterContainer キャラクター用のコンテナウィジェット
 	 */
 	UFUNCTION(BlueprintCallable, Category = "KScript|UI")
-	void SetupWidgets(UTextBlock* InMessageText, UImage* InBackgroundImage, UCanvasPanel* InCharacterContainer);
+	void SetupWidgets(UTextBlock* InMessageText);
 
 	/**
 	 * テキストを表示
@@ -61,18 +59,6 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "KScript|UI")
 	void AddLineBreak();
-
-	/**
-	 * 画像マネージャーを取得
-	 */
-	UFUNCTION(BlueprintPure, Category = "KScript|UI")
-	UKScriptImageManager* GetImageManager() const;
-
-	/**
-	 * 音声マネージャーを取得
-	 */
-	UFUNCTION(BlueprintPure, Category = "KScript|UI")
-	UKScriptAudioManager* GetAudioManager() const;
 
 	/**
 	 * 現在のメッセージテキストを取得

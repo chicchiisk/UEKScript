@@ -7,7 +7,8 @@
 #include "KScriptUIManager.h"
 #include "KScriptAudioManager.h"
 
-void UKScriptPlaySeCommand::Execute(UKScriptEngine* Engine, const FKScriptCommand& Command, UKScriptVariable* VariableManager)
+void UKScriptPlaySeCommand::Execute(UKScriptEngine* Engine, const FKScriptCommand& Command,
+                                    UKScriptVariable* VariableManager)
 {
 	const FString* Storage = Command.Parameters.Find(TEXT("storage"));
 	const FString* Loop = Command.Parameters.Find(TEXT("loop"));
@@ -17,7 +18,7 @@ void UKScriptPlaySeCommand::Execute(UKScriptEngine* Engine, const FKScriptComman
 	{
 		bool bLoop = Loop ? Loop->Equals(TEXT("true"), ESearchCase::IgnoreCase) : false;
 		UE_LOG(LogKScript, Log, TEXT("[SE再生] ファイル: %s, ループ: %s, バッファ: %s"),
-			**Storage, bLoop ? TEXT("有効") : TEXT("無効"), Buf ? **Buf : TEXT("デフォルト"));
+		       **Storage, bLoop ? TEXT("有効") : TEXT("無効"), Buf ? **Buf : TEXT("デフォルト"));
 
 		// ボリュームパラメータを取得（オプション、デフォルト: 1.0）
 		float Volume = 1.0f;
@@ -28,28 +29,21 @@ void UKScriptPlaySeCommand::Execute(UKScriptEngine* Engine, const FKScriptComman
 		}
 
 		// UIManagerを使用してSEを再生
-		if (Engine && Engine->GetUIManager())
+		UKScriptAudioManager* AudioManager = GetWorld()->GetSubsystem<UKScriptAudioManager>();
+		if (AudioManager)
 		{
-			UKScriptAudioManager* AudioManager = Engine->GetUIManager()->GetAudioManager();
-			if (AudioManager)
+			if (AudioManager->PlaySE(*Storage, Volume))
 			{
-				if (AudioManager->PlaySE(*Storage, Volume))
-				{
-					UE_LOG(LogKScript, Log, TEXT("SEの再生に成功しました"));
-				}
-				else
-				{
-					UE_LOG(LogKScript, Warning, TEXT("SEの再生に失敗しました: %s"), **Storage);
-				}
+				UE_LOG(LogKScript, Log, TEXT("SEの再生に成功しました"));
 			}
 			else
 			{
-				UE_LOG(LogKScript, Error, TEXT("AudioManagerが初期化されていません"));
+				UE_LOG(LogKScript, Warning, TEXT("SEの再生に失敗しました: %s"), **Storage);
 			}
 		}
 		else
 		{
-			UE_LOG(LogKScript, Error, TEXT("UIManagerが設定されていません"));
+			UE_LOG(LogKScript, Error, TEXT("AudioManagerが初期化されていません"));
 		}
 	}
 	else

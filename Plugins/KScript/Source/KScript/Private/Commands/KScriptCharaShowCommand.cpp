@@ -7,7 +7,8 @@
 #include "KScriptUIManager.h"
 #include "KScriptImageManager.h"
 
-void UKScriptCharaShowCommand::Execute(UKScriptEngine* Engine, const FKScriptCommand& Command, UKScriptVariable* VariableManager)
+void UKScriptCharaShowCommand::Execute(UKScriptEngine* Engine, const FKScriptCommand& Command,
+                                       UKScriptVariable* VariableManager)
 {
 	const FString* Name = Command.Parameters.Find(TEXT("name"));
 	const FString* Storage = Command.Parameters.Find(TEXT("storage"));
@@ -16,7 +17,7 @@ void UKScriptCharaShowCommand::Execute(UKScriptEngine* Engine, const FKScriptCom
 	if (Name && Storage)
 	{
 		UE_LOG(LogKScript, Log, TEXT("[キャラクター表示] 名前: %s, ファイル: %s, レイヤー: %s"),
-			**Name, **Storage, Layer ? **Layer : TEXT("デフォルト"));
+		       **Name, **Storage, Layer ? **Layer : TEXT("デフォルト"));
 
 		// 位置パラメータを取得（オプション）
 		FVector2D Position = FVector2D::ZeroVector;
@@ -32,28 +33,21 @@ void UKScriptCharaShowCommand::Execute(UKScriptEngine* Engine, const FKScriptCom
 		}
 
 		// UIManagerを使用してキャラクター画像を表示
-		if (Engine && Engine->GetUIManager())
+		UKScriptImageManager* ImageManager = GetWorld()->GetSubsystem<UKScriptImageManager>();
+		if (ImageManager)
 		{
-			UKScriptImageManager* ImageManager = Engine->GetUIManager()->GetImageManager();
-			if (ImageManager)
+			if (ImageManager->ShowCharacter(*Name, *Storage, Position))
 			{
-				if (ImageManager->ShowCharacter(*Name, *Storage, Position))
-				{
-					UE_LOG(LogKScript, Log, TEXT("キャラクター画像の表示に成功しました"));
-				}
-				else
-				{
-					UE_LOG(LogKScript, Warning, TEXT("キャラクター画像の表示に失敗しました: %s"), **Name);
-				}
+				UE_LOG(LogKScript, Log, TEXT("キャラクター画像の表示に成功しました"));
 			}
 			else
 			{
-				UE_LOG(LogKScript, Error, TEXT("ImageManagerが初期化されていません"));
+				UE_LOG(LogKScript, Warning, TEXT("キャラクター画像の表示に失敗しました: %s"), **Name);
 			}
 		}
 		else
 		{
-			UE_LOG(LogKScript, Error, TEXT("UIManagerが設定されていません"));
+			UE_LOG(LogKScript, Error, TEXT("ImageManagerが初期化されていません"));
 		}
 	}
 	else

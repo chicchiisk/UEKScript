@@ -24,36 +24,11 @@ void UKScriptUIManager::Deinitialize()
 	Super::Deinitialize();
 }
 
-void UKScriptUIManager::SetupWidgets(UTextBlock* InMessageText, UImage* InBackgroundImage, UCanvasPanel* InCharacterContainer)
+void UKScriptUIManager::SetupWidgets(UTextBlock* InMessageText)
 {
 	MessageText = InMessageText;
 
-	// ImageManagerとAudioManagerをSubsystemから取得
-	UKScriptImageManager* ImageMgr = GetImageManager();
-	if (ImageMgr)
-	{
-		ImageMgr->SetupWidgets(InBackgroundImage, InCharacterContainer);
-	}
-
 	UE_LOG(LogKScript, Log, TEXT("KScriptUIManager: ウィジェットを設定しました"));
-}
-
-UKScriptImageManager* UKScriptUIManager::GetImageManager() const
-{
-	if (UGameInstance* GameInstance = GetGameInstance())
-	{
-		return GameInstance->GetSubsystem<UKScriptImageManager>();
-	}
-	return nullptr;
-}
-
-UKScriptAudioManager* UKScriptUIManager::GetAudioManager() const
-{
-	if (UGameInstance* GameInstance = GetGameInstance())
-	{
-		return GameInstance->GetSubsystem<UKScriptAudioManager>();
-	}
-	return nullptr;
 }
 
 void UKScriptUIManager::DisplayText(const FString& Text)

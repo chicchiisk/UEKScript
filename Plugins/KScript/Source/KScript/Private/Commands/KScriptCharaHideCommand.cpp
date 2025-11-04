@@ -7,7 +7,8 @@
 #include "KScriptUIManager.h"
 #include "KScriptImageManager.h"
 
-void UKScriptCharaHideCommand::Execute(UKScriptEngine* Engine, const FKScriptCommand& Command, UKScriptVariable* VariableManager)
+void UKScriptCharaHideCommand::Execute(UKScriptEngine* Engine, const FKScriptCommand& Command,
+                                       UKScriptVariable* VariableManager)
 {
 	const FString* Name = Command.Parameters.Find(TEXT("name"));
 	const FString* Layer = Command.Parameters.Find(TEXT("layer"));
@@ -15,31 +16,24 @@ void UKScriptCharaHideCommand::Execute(UKScriptEngine* Engine, const FKScriptCom
 	if (Name)
 	{
 		UE_LOG(LogKScript, Log, TEXT("[キャラクター非表示] 名前: %s, レイヤー: %s"),
-			**Name, Layer ? **Layer : TEXT("デフォルト"));
+		       **Name, Layer ? **Layer : TEXT("デフォルト"));
 
 		// UIManagerを使用してキャラクター画像を非表示
-		if (Engine && Engine->GetUIManager())
+		UKScriptImageManager* ImageManager = GetWorld()->GetSubsystem<UKScriptImageManager>();
+		if (ImageManager)
 		{
-			UKScriptImageManager* ImageManager = Engine->GetUIManager()->GetImageManager();
-			if (ImageManager)
+			if (ImageManager->HideCharacter(*Name))
 			{
-				if (ImageManager->HideCharacter(*Name))
-				{
-					UE_LOG(LogKScript, Log, TEXT("キャラクター画像の非表示に成功しました"));
-				}
-				else
-				{
-					UE_LOG(LogKScript, Warning, TEXT("キャラクター '%s' が見つかりません"), **Name);
-				}
+				UE_LOG(LogKScript, Log, TEXT("キャラクター画像の非表示に成功しました"));
 			}
 			else
 			{
-				UE_LOG(LogKScript, Error, TEXT("ImageManagerが初期化されていません"));
+				UE_LOG(LogKScript, Warning, TEXT("キャラクター '%s' が見つかりません"), **Name);
 			}
 		}
 		else
 		{
-			UE_LOG(LogKScript, Error, TEXT("UIManagerが設定されていません"));
+			UE_LOG(LogKScript, Error, TEXT("ImageManagerが初期化されていません"));
 		}
 	}
 	else

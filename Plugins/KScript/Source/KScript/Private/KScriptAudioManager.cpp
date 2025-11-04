@@ -78,7 +78,6 @@ bool UKScriptAudioManager::PlayBGM(const FString& SoundPath, bool bLoop, float V
 
 	BGMAudioComponent->bIsUISound = true;
 	BGMAudioComponent->bAutoDestroy = false;
-	BGMAudioComponent->SetLooping(bLoop); // ループ設定を適用
 
 	CurrentBGM = Sound;
 

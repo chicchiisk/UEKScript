@@ -41,7 +41,7 @@ struct KSCRIPT_API FKScriptImageLayer
  * GameInstanceSubsystemとして実装
  */
 UCLASS()
-class KSCRIPT_API UKScriptImageManager : public UGameInstanceSubsystem
+class KSCRIPT_API UKScriptImageManager : public UWorldSubsystem
 {
 	GENERATED_BODY()
 

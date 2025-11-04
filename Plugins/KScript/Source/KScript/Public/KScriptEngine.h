@@ -172,16 +172,6 @@ public:
 	 */
 	void SetVariableManager(UKScriptVariable* InVariableManager);
 
-	/**
-	 * UIマネージャーを設定する
-	 */
-	void SetUIManager(class UKScriptUIManager* InUIManager);
-
-	/**
-	 * UIマネージャーを取得する
-	 */
-	class UKScriptUIManager* GetUIManager() const { return UIManager; }
-
 	// コマンドクラスから呼ばれるヘルパーメソッド
 
 	/**
@@ -238,9 +228,6 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UKScriptVariable> VariableManager;
-
-	UPROPERTY()
-	TObjectPtr<class UKScriptUIManager> UIManager;
 
 	UPROPERTY()
 	TObjectPtr<class UKScriptCommandFactory> CommandFactory;

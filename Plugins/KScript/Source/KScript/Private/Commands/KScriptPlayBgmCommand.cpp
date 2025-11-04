@@ -7,7 +7,8 @@
 #include "KScriptUIManager.h"
 #include "KScriptAudioManager.h"
 
-void UKScriptPlayBgmCommand::Execute(UKScriptEngine* Engine, const FKScriptCommand& Command, UKScriptVariable* VariableManager)
+void UKScriptPlayBgmCommand::Execute(UKScriptEngine* Engine, const FKScriptCommand& Command,
+                                     UKScriptVariable* VariableManager)
 {
 	const FString* Storage = Command.Parameters.Find(TEXT("storage"));
 	const FString* Loop = Command.Parameters.Find(TEXT("loop"));
@@ -16,7 +17,7 @@ void UKScriptPlayBgmCommand::Execute(UKScriptEngine* Engine, const FKScriptComma
 	{
 		bool bLoop = Loop ? Loop->Equals(TEXT("true"), ESearchCase::IgnoreCase) : true;
 		UE_LOG(LogKScript, Log, TEXT("[BGM再生] ファイル: %s, ループ: %s"),
-			**Storage, bLoop ? TEXT("有効") : TEXT("無効"));
+		       **Storage, bLoop ? TEXT("有効") : TEXT("無効"));
 
 		// ボリュームパラメータを取得（オプション、デフォルト: 1.0）
 		float Volume = 1.0f;
@@ -27,28 +28,21 @@ void UKScriptPlayBgmCommand::Execute(UKScriptEngine* Engine, const FKScriptComma
 		}
 
 		// UIManagerを使用してBGMを再生
-		if (Engine && Engine->GetUIManager())
+		UKScriptAudioManager* AudioManager = GetWorld()->GetSubsystem<UKScriptAudioManager>();
+		if (AudioManager)
 		{
-			UKScriptAudioManager* AudioManager = Engine->GetUIManager()->GetAudioManager();
-			if (AudioManager)
+			if (AudioManager->PlayBGM(*Storage, bLoop, Volume))
 			{
-				if (AudioManager->PlayBGM(*Storage, bLoop, Volume))
-				{
-					UE_LOG(LogKScript, Log, TEXT("BGMの再生に成功しました"));
-				}
-				else
-				{
-					UE_LOG(LogKScript, Warning, TEXT("BGMの再生に失敗しました: %s"), **Storage);
-				}
+				UE_LOG(LogKScript, Log, TEXT("BGMの再生に成功しました"));
 			}
 			else
 			{
-				UE_LOG(LogKScript, Error, TEXT("AudioManagerが初期化されていません"));
+				UE_LOG(LogKScript, Warning, TEXT("BGMの再生に失敗しました: %s"), **Storage);
 			}
 		}
 		else
 		{
-			UE_LOG(LogKScript, Error, TEXT("UIManagerが設定されていません"));
+			UE_LOG(LogKScript, Error, TEXT("AudioManagerが初期化されていません"));
 		}
 	}
 	else

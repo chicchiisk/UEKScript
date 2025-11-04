@@ -14,7 +14,7 @@ class UAudioComponent;
  * GameInstanceSubsystemとして実装
  */
 UCLASS()
-class KSCRIPT_API UKScriptAudioManager : public UGameInstanceSubsystem
+class KSCRIPT_API UKScriptAudioManager : public UWorldSubsystem
 {
 	GENERATED_BODY()
 

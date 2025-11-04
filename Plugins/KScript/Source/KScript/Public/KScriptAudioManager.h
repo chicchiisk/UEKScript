@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
+#include "Subsystems/GameInstanceSubsystem.h"
 #include "Sound/SoundBase.h"
 #include "KScriptAudioManager.generated.h"
 
@@ -11,14 +11,18 @@ class UAudioComponent;
 
 /**
  * 音声再生システム - BGMとSEの再生を管理
+ * GameInstanceSubsystemとして実装
  */
-UCLASS(BlueprintType, Blueprintable)
-class KSCRIPT_API UKScriptAudioManager : public UObject
+UCLASS()
+class KSCRIPT_API UKScriptAudioManager : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 
 public:
-	UKScriptAudioManager();
+	// USubsystem interface
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+	virtual void Deinitialize() override;
+	// End of USubsystem interface
 
 	/**
 	 * BGMを再生
@@ -61,12 +65,6 @@ public:
 	bool IsBGMPlaying() const;
 
 	/**
-	 * 初期化
-	 * @param InWorld ワールドコンテキスト
-	 */
-	void Initialize(UWorld* InWorld);
-
-	/**
 	 * サウンドアセットをロード
 	 * @param SoundPath サウンドアセットのパス
 	 * @return ロードしたサウンド
@@ -81,8 +79,4 @@ protected:
 	// 現在再生中のBGM
 	UPROPERTY()
 	TObjectPtr<USoundBase> CurrentBGM;
-
-	// ワールドへの参照
-	UPROPERTY()
-	TWeakObjectPtr<UWorld> World;
 };

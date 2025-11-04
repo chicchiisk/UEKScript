@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
+#include "Subsystems/GameInstanceSubsystem.h"
 #include "Engine/Texture2D.h"
 #include "KScriptImageManager.generated.h"
 
@@ -38,14 +38,26 @@ struct KSCRIPT_API FKScriptImageLayer
 
 /**
  * 画像表示システム - 背景とキャラクターの画像を管理
+ * GameInstanceSubsystemとして実装
  */
-UCLASS(BlueprintType, Blueprintable)
-class KSCRIPT_API UKScriptImageManager : public UObject
+UCLASS()
+class KSCRIPT_API UKScriptImageManager : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 
 public:
-	UKScriptImageManager();
+	// USubsystem interface
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+	virtual void Deinitialize() override;
+	// End of USubsystem interface
+
+	/**
+	 * UIウィジェットを設定
+	 * @param InBackgroundWidget 背景用のImageウィジェット
+	 * @param InCharacterContainer キャラクター用のコンテナウィジェット
+	 */
+	UFUNCTION(BlueprintCallable, Category = "KScript|Image")
+	void SetupWidgets(UImage* InBackgroundWidget, class UCanvasPanel* InCharacterContainer);
 
 	/**
 	 * 背景画像を設定
@@ -86,13 +98,6 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "KScript|Image")
 	void SetLayerOpacity(const FString& LayerName, float Opacity);
-
-	/**
-	 * 初期化
-	 * @param InBackgroundWidget 背景用のImageウィジェット
-	 * @param InCharacterContainer キャラクター用のコンテナウィジェット
-	 */
-	void Initialize(UImage* InBackgroundWidget, class UCanvasPanel* InCharacterContainer);
 
 	/**
 	 * テクスチャをロード

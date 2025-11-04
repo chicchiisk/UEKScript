@@ -10,11 +10,21 @@
 #include "Blueprint/WidgetTree.h"
 #include "UObject/ConstructorHelpers.h"
 
-UKScriptImageManager::UKScriptImageManager()
+void UKScriptImageManager::Initialize(FSubsystemCollectionBase& Collection)
 {
+	Super::Initialize(Collection);
+
+	UE_LOG(LogKScript, Log, TEXT("KScriptImageManagerサブシステムを初期化しました"));
 }
 
-void UKScriptImageManager::Initialize(UImage* InBackgroundWidget, UCanvasPanel* InCharacterContainer)
+void UKScriptImageManager::Deinitialize()
+{
+	UE_LOG(LogKScript, Log, TEXT("KScriptImageManagerサブシステムを終了しました"));
+
+	Super::Deinitialize();
+}
+
+void UKScriptImageManager::SetupWidgets(UImage* InBackgroundWidget, UCanvasPanel* InCharacterContainer)
 {
 	BackgroundWidget = InBackgroundWidget;
 	CharacterContainer = InCharacterContainer;
@@ -22,7 +32,7 @@ void UKScriptImageManager::Initialize(UImage* InBackgroundWidget, UCanvasPanel* 
 	BackgroundLayer.LayerName = TEXT("Background");
 	BackgroundLayer.ImageWidget = InBackgroundWidget;
 
-	UE_LOG(LogKScript, Log, TEXT("KScriptImageManagerを初期化しました"));
+	UE_LOG(LogKScript, Log, TEXT("KScriptImageManager: ウィジェットを設定しました"));
 }
 
 UTexture2D* UKScriptImageManager::LoadTexture(const FString& TexturePath)

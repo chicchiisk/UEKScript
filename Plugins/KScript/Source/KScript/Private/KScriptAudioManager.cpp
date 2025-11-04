@@ -6,14 +6,24 @@
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundBase.h"
 
-UKScriptAudioManager::UKScriptAudioManager()
+void UKScriptAudioManager::Initialize(FSubsystemCollectionBase& Collection)
 {
+	Super::Initialize(Collection);
+
+	UE_LOG(LogKScript, Log, TEXT("KScriptAudioManagerサブシステムを初期化しました"));
 }
 
-void UKScriptAudioManager::Initialize(UWorld* InWorld)
+void UKScriptAudioManager::Deinitialize()
 {
-	World = InWorld;
-	UE_LOG(LogKScript, Log, TEXT("KScriptAudioManagerを初期化しました"));
+	// BGMを停止
+	if (BGMAudioComponent && BGMAudioComponent->IsPlaying())
+	{
+		BGMAudioComponent->Stop();
+	}
+
+	UE_LOG(LogKScript, Log, TEXT("KScriptAudioManagerサブシステムを終了しました"));
+
+	Super::Deinitialize();
 }
 
 USoundBase* UKScriptAudioManager::LoadSound(const FString& SoundPath)
@@ -39,7 +49,8 @@ USoundBase* UKScriptAudioManager::LoadSound(const FString& SoundPath)
 
 bool UKScriptAudioManager::PlayBGM(const FString& SoundPath, bool bLoop, float Volume)
 {
-	if (!World.IsValid())
+	UWorld* World = GetWorld();
+	if (!World)
 	{
 		UE_LOG(LogKScript, Error, TEXT("Worldが無効です"));
 		return false;
@@ -58,7 +69,7 @@ bool UKScriptAudioManager::PlayBGM(const FString& SoundPath, bool bLoop, float V
 	}
 
 	// 新しいBGMを再生
-	BGMAudioComponent = UGameplayStatics::SpawnSound2D(World.Get(), Sound, Volume);
+	BGMAudioComponent = UGameplayStatics::SpawnSound2D(World, Sound, Volume);
 	if (!BGMAudioComponent)
 	{
 		UE_LOG(LogKScript, Error, TEXT("BGMオーディオコンポーネントの作成に失敗しました"));
@@ -67,7 +78,7 @@ bool UKScriptAudioManager::PlayBGM(const FString& SoundPath, bool bLoop, float V
 
 	BGMAudioComponent->bIsUISound = true;
 	BGMAudioComponent->bAutoDestroy = false;
-	// BGMAudioComponent->bLooping = true; // ループ設定を適用
+	BGMAudioComponent->SetLooping(bLoop); // ループ設定を適用
 
 	CurrentBGM = Sound;
 
@@ -97,7 +108,8 @@ void UKScriptAudioManager::StopBGM(float FadeOutDuration)
 
 bool UKScriptAudioManager::PlaySE(const FString& SoundPath, float Volume)
 {
-	if (!World.IsValid())
+	UWorld* World = GetWorld();
+	if (!World)
 	{
 		UE_LOG(LogKScript, Error, TEXT("Worldが無効です"));
 		return false;
@@ -110,7 +122,7 @@ bool UKScriptAudioManager::PlaySE(const FString& SoundPath, float Volume)
 	}
 
 	// SEを再生（ワンショット、自動破棄）
-	UGameplayStatics::PlaySound2D(World.Get(), Sound, Volume);
+	UGameplayStatics::PlaySound2D(World, Sound, Volume);
 
 	UE_LOG(LogKScript, Log, TEXT("SEを再生しました: %s (Volume: %f)"), *SoundPath, Volume);
 	return true;

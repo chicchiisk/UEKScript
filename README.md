@@ -177,6 +177,22 @@ class KSCRIPTEDITOR_API UKScriptAssetFactory : public UFactory
   UE_LOG(LogTemp, Log, TEXT("Script loaded"));  // LogTempと英語は使わない
   ```
 
+#### エディタでの動的ウィジェット作成
+- **トランザクションバッファ対策**: エディタ実行時に動的に作成するウィジェットは、トランザクションバッファ（Undo/Redo）に記録されないようにする必要があります
+- **実装方法**:
+  ```cpp
+  // WidgetTreeで動的にウィジェットを作成
+  UImage* CharaImage = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
+  
+  // RF_Transactionalフラグをクリアしてトランザクションバッファに記録されないようにする
+  CharaImage->ClearFlags(RF_Transactional);
+  
+  // 削除時は明示的にマークする
+  CharaImage->RemoveFromParent();
+  CharaImage->MarkAsGarbage();
+  ```
+- **理由**: エディタのUndo/RedoシステムがGameInstanceのライフサイクルより長く生存するため、適切に処理しないとGC（ガベージコレクション）エラーが発生します
+
 ### 実装時の注意点
 
 - **パフォーマンス**: UE5のガベージコレクションを考慮したメモリ管理

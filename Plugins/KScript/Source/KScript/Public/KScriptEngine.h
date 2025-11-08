@@ -248,4 +248,8 @@ protected:
 	// コールスタック（サブルーチン用）
 	UPROPERTY()
 	TArray<int32> CallStack;
+
+	// 最後に実行したコマンドタイプ（ページ区切り処理用）
+	UPROPERTY()
+	EKScriptCommandType LastExecutedCommandType = EKScriptCommandType::Unknown;
 };

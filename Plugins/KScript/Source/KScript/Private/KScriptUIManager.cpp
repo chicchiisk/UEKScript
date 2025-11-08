@@ -21,6 +21,10 @@ void UKScriptUIManager::Deinitialize()
 {
 	UE_LOG(LogKScript, Log, TEXT("KScriptUIManagerサブシステムを終了しました"));
 
+	// ウィジェット参照をクリア
+	MessageText = nullptr;
+	CurrentMessage.Empty();
+
 	Super::Deinitialize();
 }
 

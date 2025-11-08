@@ -21,6 +21,33 @@ void UKScriptImageManager::Deinitialize()
 {
 	UE_LOG(LogKScript, Log, TEXT("KScriptImageManagerサブシステムを終了しました"));
 
+	// キャラクターウィジェットを明示的に削除
+	for (auto& Layer : CharacterLayers)
+	{
+		if (IsValid(Layer.Value.ImageWidget))
+		{
+			Layer.Value.ImageWidget->RemoveFromParent();
+			Layer.Value.ImageWidget->MarkAsGarbage();
+			Layer.Value.ImageWidget = nullptr;
+		}
+		if (IsValid(Layer.Value.Texture))
+		{
+			Layer.Value.Texture = nullptr;
+		}
+	}
+	CharacterLayers.Empty();
+
+	// 背景の参照をクリア
+	if (IsValid(BackgroundLayer.Texture))
+	{
+		BackgroundLayer.Texture = nullptr;
+	}
+	BackgroundLayer.ImageWidget = nullptr;
+	
+	// ウィジェット参照をクリア
+	BackgroundWidget = nullptr;
+	CharacterContainer = nullptr;
+
 	Super::Deinitialize();
 }
 
@@ -78,7 +105,8 @@ bool UKScriptImageManager::SetBackground(const FString& TexturePath)
 	return true;
 }
 
-bool UKScriptImageManager::ShowCharacter(const FString& CharaName, const FString& TexturePath, const FVector2D& Position)
+bool UKScriptImageManager::ShowCharacter(const FString& CharaName, const FString& TexturePath,
+                                         const FVector2D& Position)
 {
 	if (!CharacterContainer)
 	{
@@ -91,6 +119,9 @@ bool UKScriptImageManager::ShowCharacter(const FString& CharaName, const FString
 	{
 		return false;
 	}
+	float Scale = 1.0f;
+	FVector2D TexSize(Texture->GetSizeX(), Texture->GetSizeY());
+	FVector2D ImageSize(TexSize * Scale);
 
 	// 既存のキャラクターがいる場合は更新
 	if (CharacterLayers.Contains(CharaName))
@@ -100,6 +131,7 @@ bool UKScriptImageManager::ShowCharacter(const FString& CharaName, const FString
 		if (Layer.ImageWidget)
 		{
 			Layer.ImageWidget->SetBrushFromTexture(Texture);
+			Layer.ImageWidget->SetDesiredSizeOverride(ImageSize);
 			Layer.ImageWidget->SetVisibility(ESlateVisibility::Visible);
 			Layer.Position = Position;
 			Layer.bVisible = true;
@@ -108,6 +140,7 @@ bool UKScriptImageManager::ShowCharacter(const FString& CharaName, const FString
 			if (UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(Layer.ImageWidget->Slot))
 			{
 				CanvasSlot->SetPosition(Position);
+				CanvasSlot->SetAutoSize(true); // AutoSizeを有効にしてDesiredSizeを使用
 			}
 		}
 	}
@@ -121,23 +154,27 @@ bool UKScriptImageManager::ShowCharacter(const FString& CharaName, const FString
 			UE_LOG(LogKScript, Error, TEXT("UserWidgetまたはWidgetTreeが見つかりません"));
 			return false;
 		}
+		TObjectPtr<UWidgetTree> WidgetTree = OwningWidget->WidgetTree;
 
-		UImage* CharaImage = OwningWidget->WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
+
+		UImage* CharaImage = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
 		if (!CharaImage)
 		{
 			UE_LOG(LogKScript, Error, TEXT("キャラクター画像ウィジェットの作成に失敗しました"));
 			return false;
 		}
-
-		CharaImage->SetBrushFromTexture(Texture);
+		// エディタのトランザクションバッファに記録されないようにフラグをクリア
+		CharaImage->ClearFlags(RF_Transactional);
 
 		// コンテナに追加
 		UCanvasPanelSlot* CanvasSlot = CharacterContainer->AddChildToCanvas(CharaImage);
 		if (CanvasSlot)
 		{
 			CanvasSlot->SetPosition(Position);
-			CanvasSlot->SetAutoSize(true);
+			CanvasSlot->SetAutoSize(true); // AutoSizeを有効にしてDesiredSizeを使用
 		}
+		CharaImage->SetBrushFromTexture(Texture);
+		CharaImage->SetDesiredSizeOverride(ImageSize);
 
 		// レイヤー情報を保存
 		FKScriptImageLayer NewLayer;

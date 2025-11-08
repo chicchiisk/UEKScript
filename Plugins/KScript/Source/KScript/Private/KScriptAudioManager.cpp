@@ -20,6 +20,9 @@ void UKScriptAudioManager::Deinitialize()
 	{
 		BGMAudioComponent->Stop();
 	}
+	
+	// AudioComponent参照をクリア
+	BGMAudioComponent = nullptr;
 
 	UE_LOG(LogKScript, Log, TEXT("KScriptAudioManagerサブシステムを終了しました"));
 

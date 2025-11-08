@@ -118,7 +118,8 @@ bool UKScriptVariable::EvaluateSimpleExpression(const FString& Expression, FKScr
 	}
 
 	// 文字列リテラル
-	if (TrimmedExpr.StartsWith(TEXT("\"")) && TrimmedExpr.EndsWith(TEXT("\"")))
+	if ((TrimmedExpr.StartsWith(TEXT("\"")) && TrimmedExpr.EndsWith(TEXT("\""))) ||
+		(TrimmedExpr.StartsWith(TEXT("'")) && TrimmedExpr.EndsWith(TEXT("'"))))
 	{
 		FString StringValue = TrimmedExpr.Mid(1, TrimmedExpr.Len() - 2);
 		OutResult = FKScriptVariableValue(StringValue);

@@ -100,6 +100,13 @@ protected:
 	EKScriptCommandType GetCommandTypeFromTagName(const FString& TagName) const;
 
 	/**
+	 * 文字列リテラル内のスペースを考慮してパラメータ文字列を分割
+	 * @param ParamsString パラメータ文字列
+	 * @param OutParamPairs 分割されたパラメータのペア
+	 */
+	void SplitParametersRespectingQuotes(const FString& ParamsString, TArray<FString>& OutParamPairs) const;
+
+	/**
 	 * 文字列が空白文字のみかチェック
 	 */
 	bool IsWhitespaceOnly(const FString& Str) const;

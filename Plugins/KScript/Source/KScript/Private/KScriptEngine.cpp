@@ -7,6 +7,7 @@
 #include "KScriptAsset.h"
 #include "Commands/KScriptCommandFactory.h"
 #include "Commands/KScriptCommandBase.h"
+#include "KScriptUIManager.h"
 #include "Misc/FileHelper.h"
 #include "HAL/PlatformFileManager.h"
 
@@ -121,6 +122,17 @@ void UKScriptEngine::OnInput()
 {
 	if (ExecutionState == EKScriptExecutionState::WaitingInput)
 	{
+		// ページ区切りで待っていた場合、再開時にテキストをクリア
+		if (LastExecutedCommandType == EKScriptCommandType::WaitPageBreak)
+		{
+			UKScriptUIManager* UIManager = GetWorld()->GetSubsystem<UKScriptUIManager>();
+			if (UIManager)
+			{
+				UIManager->ClearText();
+				UE_LOG(LogKScript, Log, TEXT("ページ区切り後、テキストをクリアしました"));
+			}
+		}
+		
 		ExecutionState = EKScriptExecutionState::Running;
 		UE_LOG(LogKScript, Log, TEXT("入力を受け取りました。実行を再開します"));
 	}
@@ -190,6 +202,9 @@ void UKScriptEngine::ExecuteCommand(const FKScriptCommand& Command)
 {
 	UE_LOG(LogKScript, Verbose, TEXT("コマンド実行: タイプ %d, 行番号 %d"),
 		(int32)Command.Type, Command.LineNumber);
+
+	// 最後に実行したコマンドタイプを保存（ページ区切り処理用）
+	LastExecutedCommandType = Command.Type;
 
 	// Commandパターン: コマンドファクトリーから適切なコマンドインスタンスを取得して実行
 	if (CommandFactory)

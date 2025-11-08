@@ -230,9 +230,19 @@ class KSCRIPTEDITOR_API UKScriptAssetFactory : public UFactory
   - [x] [playse] - SE再生
 
 ### Phase 3: 高度な機能（プラグイン内）
-- [ ] セーブ/ロードシステム
-- [ ] エフェクトシステム
-- [ ] UE5固有機能との統合
+- [x] セーブ/ロードシステム
+  - [x] KScriptSaveGameクラス（USaveGame継承）
+  - [x] セーブ/ロードAPI（KScriptSubsystem）
+  - [x] [save]コマンド - ゲーム状態の保存
+  - [x] [load]コマンド - ゲーム状態の復元
+- [x] エフェクトシステム
+  - [x] KScriptTransitionManagerサブシステム
+  - [x] フェード、スライドなどのトランジション効果
+  - [x] [trans]コマンド - トランジション設定
+- [x] UE5固有機能との統合
+  - [x] UE5 Subsystemアーキテクチャ活用
+  - [x] UMGウィジェットシステム統合
+  - [x] マテリアルシステム対応
 
 ### Phase 4: 開発支援ツール（プラグイン内エディタ拡張）
 - [x] KScriptEditorモジュールの作成

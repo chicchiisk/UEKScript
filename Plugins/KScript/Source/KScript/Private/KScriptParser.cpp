@@ -394,6 +394,18 @@ EKScriptCommandType UKScriptParser::GetCommandTypeFromTagName(const FString& Tag
 	{
 		return EKScriptCommandType::PlaySe;
 	}
+	else if (TagName.Equals(TEXT("save"), ESearchCase::IgnoreCase))
+	{
+		return EKScriptCommandType::Save;
+	}
+	else if (TagName.Equals(TEXT("load"), ESearchCase::IgnoreCase))
+	{
+		return EKScriptCommandType::Load;
+	}
+	else if (TagName.Equals(TEXT("trans"), ESearchCase::IgnoreCase))
+	{
+		return EKScriptCommandType::Trans;
+	}
 
 	return EKScriptCommandType::Unknown;
 }

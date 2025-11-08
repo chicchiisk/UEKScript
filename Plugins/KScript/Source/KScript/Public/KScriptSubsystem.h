@@ -99,6 +99,63 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "KScript")
 	bool StepScript();
 
+	// ========================================
+	// セーブ/ロード機能
+	// ========================================
+
+	/**
+	 * 現在のゲーム状態をセーブする
+	 * @param SlotName セーブスロット名
+	 * @param UserIndex ユーザーインデックス
+	 * @return 成功時true
+	 */
+	UFUNCTION(BlueprintCallable, Category = "KScript|SaveLoad")
+	bool SaveGame(const FString& SlotName, int32 UserIndex = 0);
+
+	/**
+	 * セーブデータをロードする
+	 * @param SlotName セーブスロット名
+	 * @param UserIndex ユーザーインデックス
+	 * @return 成功時true
+	 */
+	UFUNCTION(BlueprintCallable, Category = "KScript|SaveLoad")
+	bool LoadGame(const FString& SlotName, int32 UserIndex = 0);
+
+	/**
+	 * セーブデータが存在するかチェック
+	 * @param SlotName セーブスロット名
+	 * @param UserIndex ユーザーインデックス
+	 * @return 存在する場合true
+	 */
+	UFUNCTION(BlueprintPure, Category = "KScript|SaveLoad")
+	bool DoesSaveGameExist(const FString& SlotName, int32 UserIndex = 0) const;
+
+	/**
+	 * セーブデータを削除
+	 * @param SlotName セーブスロット名
+	 * @param UserIndex ユーザーインデックス
+	 * @return 成功時true
+	 */
+	UFUNCTION(BlueprintCallable, Category = "KScript|SaveLoad")
+	bool DeleteSaveGame(const FString& SlotName, int32 UserIndex = 0);
+
+	/**
+	 * 現在実行中のスクリプトアセットパスを取得
+	 */
+	UFUNCTION(BlueprintPure, Category = "KScript")
+	FString GetCurrentScriptAssetPath() const { return CurrentScriptAssetPath; }
+
+protected:
+	/**
+	 * 現在の状態をセーブゲームオブジェクトに保存
+	 */
+	void CaptureCurrentState(class UKScriptSaveGame* SaveGameObject);
+
+	/**
+	 * セーブゲームオブジェクトから状態を復元
+	 */
+	bool RestoreFromSaveGame(class UKScriptSaveGame* SaveGameObject);
+
 protected:
 	UPROPERTY()
 	TObjectPtr<UKScriptEngine> ScriptEngine;
@@ -108,4 +165,8 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UKScriptVariable> VariableManager;
+
+	/** 現在実行中のスクリプトアセットのパス */
+	UPROPERTY()
+	FString CurrentScriptAssetPath;
 };

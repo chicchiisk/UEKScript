@@ -20,6 +20,9 @@
 #include "Commands/KScriptPlayBgmCommand.h"
 #include "Commands/KScriptStopBgmCommand.h"
 #include "Commands/KScriptPlaySeCommand.h"
+#include "Commands/KScriptSaveCommand.h"
+#include "Commands/KScriptLoadCommand.h"
+#include "Commands/KScriptTransCommand.h"
 
 UKScriptCommandFactory::UKScriptCommandFactory()
 {
@@ -48,6 +51,11 @@ void UKScriptCommandFactory::RegisterAllCommands()
 	RegisterCommand<UKScriptPlayBgmCommand>(EKScriptCommandType::PlayBgm);
 	RegisterCommand<UKScriptStopBgmCommand>(EKScriptCommandType::StopBgm);
 	RegisterCommand<UKScriptPlaySeCommand>(EKScriptCommandType::PlaySe);
+
+	// Phase3: セーブ/ロード・トランジションコマンド
+	RegisterCommand<UKScriptSaveCommand>(EKScriptCommandType::Save);
+	RegisterCommand<UKScriptLoadCommand>(EKScriptCommandType::Load);
+	RegisterCommand<UKScriptTransCommand>(EKScriptCommandType::Trans);
 }
 
 

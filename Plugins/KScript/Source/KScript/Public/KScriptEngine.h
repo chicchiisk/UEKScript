@@ -33,6 +33,9 @@ enum class EKScriptCommandType : uint8
 	PlayBgm,        // BGM再生 [playbgm]
 	StopBgm,        // BGM停止 [stopbgm]
 	PlaySe,         // SE再生 [playse]
+	Save,           // セーブ [save]
+	Load,           // ロード [load]
+	Trans,          // トランジション設定 [trans]
 	Unknown         // 不明
 };
 

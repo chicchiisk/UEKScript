@@ -245,7 +245,7 @@ bool UKScriptParser::ParseTagParameters(const FString& TagContent, FString& OutT
 
 		// パラメータを解析（key=value形式）
 		TArray<FString> ParamPairs;
-		ParamsString.ParseIntoArray(ParamPairs, TEXT(" "), true);
+		SplitParametersRespectingQuotes(ParamsString, ParamPairs);
 
 		for (const FString& Pair : ParamPairs)
 		{
@@ -257,6 +257,10 @@ bool UKScriptParser::ParseTagParameters(const FString& TagContent, FString& OutT
 
 				// クォートを除去
 				if (Value.StartsWith(TEXT("\"")) && Value.EndsWith(TEXT("\"")))
+				{
+					Value = Value.Mid(1, Value.Len() - 2);
+				}
+				else if (Value.StartsWith(TEXT("'")) && Value.EndsWith(TEXT("'")))
 				{
 					Value = Value.Mid(1, Value.Len() - 2);
 				}
@@ -272,6 +276,52 @@ bool UKScriptParser::ParseTagParameters(const FString& TagContent, FString& OutT
 	}
 
 	return !OutTagName.IsEmpty();
+}
+
+void UKScriptParser::SplitParametersRespectingQuotes(const FString& ParamsString, TArray<FString>& OutParamPairs) const
+{
+	OutParamPairs.Empty();
+
+	int32 StartPos = 0;
+	bool InDoubleQuote = false;
+	bool InSingleQuote = false;
+
+	for (int32 i = 0; i < ParamsString.Len(); i++)
+	{
+		TCHAR Char = ParamsString[i];
+
+		if (Char == TEXT('"') && !InSingleQuote)
+		{
+			InDoubleQuote = !InDoubleQuote;
+		}
+		else if (Char == TEXT('\'') && !InDoubleQuote)
+		{
+			InSingleQuote = !InSingleQuote;
+		}
+		else if (Char == TEXT(' ') && !InDoubleQuote && !InSingleQuote)
+		{
+			// クォート外のスペースで分割
+			if (i > StartPos)
+			{
+				FString Pair = ParamsString.Mid(StartPos, i - StartPos).TrimStartAndEnd();
+				if (!Pair.IsEmpty())
+				{
+					OutParamPairs.Add(Pair);
+				}
+			}
+			StartPos = i + 1;
+		}
+	}
+
+	// 最後の要素を追加
+	if (StartPos < ParamsString.Len())
+	{
+		FString Pair = ParamsString.Mid(StartPos).TrimStartAndEnd();
+		if (!Pair.IsEmpty())
+		{
+			OutParamPairs.Add(Pair);
+		}
+	}
 }
 
 EKScriptCommandType UKScriptParser::GetCommandTypeFromTagName(const FString& TagName) const
@@ -319,6 +369,30 @@ EKScriptCommandType UKScriptParser::GetCommandTypeFromTagName(const FString& Tag
 	else if (TagName.Equals(TEXT("eval"), ESearchCase::IgnoreCase))
 	{
 		return EKScriptCommandType::Eval;
+	}
+	else if (TagName.Equals(TEXT("bg"), ESearchCase::IgnoreCase))
+	{
+		return EKScriptCommandType::Bg;
+	}
+	else if (TagName.Equals(TEXT("chara_show"), ESearchCase::IgnoreCase))
+	{
+		return EKScriptCommandType::CharaShow;
+	}
+	else if (TagName.Equals(TEXT("chara_hide"), ESearchCase::IgnoreCase))
+	{
+		return EKScriptCommandType::CharaHide;
+	}
+	else if (TagName.Equals(TEXT("playbgm"), ESearchCase::IgnoreCase))
+	{
+		return EKScriptCommandType::PlayBgm;
+	}
+	else if (TagName.Equals(TEXT("stopbgm"), ESearchCase::IgnoreCase))
+	{
+		return EKScriptCommandType::StopBgm;
+	}
+	else if (TagName.Equals(TEXT("playse"), ESearchCase::IgnoreCase))
+	{
+		return EKScriptCommandType::PlaySe;
 	}
 
 	return EKScriptCommandType::Unknown;

@@ -5,6 +5,8 @@
 #include "KScriptEngine.h"
 #include "KScriptParser.h"
 #include "KScriptVariable.h"
+#include "KScriptAsset.h"
+#include "KScriptUIManager.h"
 
 UKScriptSubsystem::UKScriptSubsystem()
 {
@@ -22,6 +24,7 @@ void UKScriptSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	// エンジンにパーサーと変数管理システムを設定
 	ScriptEngine->SetParser(ScriptParser);
 	ScriptEngine->SetVariableManager(VariableManager);
+
 	UE_LOG(LogKScript, Log, TEXT("KScriptサブシステムを初期化しました"));
 }
 
@@ -44,6 +47,30 @@ bool UKScriptSubsystem::LoadAndStartScript(const FString& FilePath)
 	{
 		ScriptEngine->Start();
 		UE_LOG(LogKScript, Log, TEXT("スクリプトファイルから実行を開始しました: %s"), *FilePath);
+		return true;
+	}
+
+	return false;
+}
+
+bool UKScriptSubsystem::LoadAndStartScriptFromAsset(UKScriptAsset* ScriptAsset)
+{
+	if (!ScriptEngine)
+	{
+		UE_LOG(LogKScript, Error, TEXT("スクリプトエンジンが初期化されていません"));
+		return false;
+	}
+
+	if (!ScriptAsset)
+	{
+		UE_LOG(LogKScript, Error, TEXT("スクリプトアセットがnullです"));
+		return false;
+	}
+
+	if (ScriptEngine->LoadScriptFromAsset(ScriptAsset))
+	{
+		ScriptEngine->Start();
+		UE_LOG(LogKScript, Log, TEXT("スクリプトアセットから実行を開始しました: %s"), *ScriptAsset->GetName());
 		return true;
 	}
 

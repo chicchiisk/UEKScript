@@ -26,7 +26,7 @@ public class KScriptEditor : ModuleRules
 			new string[]
 			{
 				"Core",
-				// ... add other public dependencies that you statically link with here ...
+				"KScript",
 			}
 			);
 
@@ -38,7 +38,9 @@ public class KScriptEditor : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-				// ... add private dependencies that you statically link with here ...	
+				"UnrealEd",
+				"AssetTools",
+				"Projects",
 			}
 			);
 

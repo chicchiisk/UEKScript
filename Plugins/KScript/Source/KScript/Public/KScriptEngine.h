@@ -27,6 +27,12 @@ enum class EKScriptCommandType : uint8
 	Else,           // 条件分岐のelse [else]
 	EndIf,          // 条件分岐終了 [endif]
 	Eval,           // 式の評価 [eval]
+	Bg,             // 背景表示 [bg]
+	CharaShow,      // キャラクター表示 [chara_show]
+	CharaHide,      // キャラクター非表示 [chara_hide]
+	PlayBgm,        // BGM再生 [playbgm]
+	StopBgm,        // BGM停止 [stopbgm]
+	PlaySe,         // SE再生 [playse]
 	Unknown         // 不明
 };
 
@@ -90,6 +96,14 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "KScript")
 	bool LoadScriptFromFile(const FString& FilePath);
+
+	/**
+	 * KScriptアセットからスクリプトをロードする
+	 * @param ScriptAsset KScriptアセット
+	 * @return ロード成功時true
+	 */
+	UFUNCTION(BlueprintCallable, Category = "KScript")
+	bool LoadScriptFromAsset(class UKScriptAsset* ScriptAsset);
 
 	/**
 	 * スクリプト実行を開始する
@@ -234,4 +248,8 @@ protected:
 	// コールスタック（サブルーチン用）
 	UPROPERTY()
 	TArray<int32> CallStack;
+
+	// 最後に実行したコマンドタイプ（ページ区切り処理用）
+	UPROPERTY()
+	EKScriptCommandType LastExecutedCommandType = EKScriptCommandType::Unknown;
 };

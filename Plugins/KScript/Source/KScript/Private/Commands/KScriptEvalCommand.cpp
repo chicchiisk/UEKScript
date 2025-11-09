@@ -5,9 +5,9 @@
 #include "KScriptEngine.h"
 #include "KScriptVariable.h"
 
-void UKScriptEvalCommand::Execute(UKScriptEngine* Engine, const FKScriptCommand& Command, UKScriptVariable* VariableManager)
+void UKScriptEvalCommand::Execute(class UKScriptEngine* Engine, const FKScriptCommand* Command, class UKScriptVariable* VariableManager)
 {
-	const FString* Expression = Command.Parameters.Find(TEXT("exp"));
+	const FString* Expression = Command->Parameters.Find(TEXT("exp"));
 	if (Expression && VariableManager)
 	{
 		// 式を評価

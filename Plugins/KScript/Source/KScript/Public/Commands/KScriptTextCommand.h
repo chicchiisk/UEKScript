@@ -15,6 +15,6 @@ class KSCRIPT_API UKScriptTextCommand : public UKScriptCommandBase
 	GENERATED_BODY()
 
 public:
-	virtual void Execute(UKScriptEngine* Engine, const FKScriptCommand& Command, UKScriptVariable* VariableManager) override;
+	virtual void Execute(class UKScriptEngine* Engine, const FKScriptCommand* Command, class UKScriptVariable* VariableManager) override;
 	virtual EKScriptCommandType GetCommandType() const override { return EKScriptCommandType::Text; }
 };

@@ -7,11 +7,11 @@
 #include "KScriptUIManager.h"
 #include "KScriptAudioManager.h"
 
-void UKScriptPlayBgmCommand::Execute(UKScriptEngine* Engine, const FKScriptCommand& Command,
-                                     UKScriptVariable* VariableManager)
+void UKScriptPlayBgmCommand::Execute(class UKScriptEngine* Engine, const FKScriptCommand* Command,
+                                     class UKScriptVariable* VariableManager)
 {
-	const FString* Storage = Command.Parameters.Find(TEXT("storage"));
-	const FString* Loop = Command.Parameters.Find(TEXT("loop"));
+	const FString* Storage = Command->Parameters.Find(TEXT("storage"));
+	const FString* Loop = Command->Parameters.Find(TEXT("loop"));
 
 	if (Storage)
 	{
@@ -21,7 +21,7 @@ void UKScriptPlayBgmCommand::Execute(UKScriptEngine* Engine, const FKScriptComma
 
 		// ボリュームパラメータを取得（オプション、デフォルト: 1.0）
 		float Volume = 1.0f;
-		const FString* VolumeStr = Command.Parameters.Find(TEXT("volume"));
+		const FString* VolumeStr = Command->Parameters.Find(TEXT("volume"));
 		if (VolumeStr)
 		{
 			Volume = FCString::Atof(**VolumeStr) / 100.0f; // ティラノスクリプトでは0-100の範囲

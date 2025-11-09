@@ -7,10 +7,10 @@
 #include "KScriptUIManager.h"
 #include "KScriptAudioManager.h"
 
-void UKScriptStopBgmCommand::Execute(UKScriptEngine* Engine, const FKScriptCommand& Command,
-                                     UKScriptVariable* VariableManager)
+void UKScriptStopBgmCommand::Execute(class UKScriptEngine* Engine, const FKScriptCommand* Command,
+                                     class UKScriptVariable* VariableManager)
 {
-	const FString* FadeOut = Command.Parameters.Find(TEXT("fadeout"));
+	const FString* FadeOut = Command->Parameters.Find(TEXT("fadeout"));
 
 	UE_LOG(LogKScript, Log, TEXT("[BGM停止] フェードアウト: %s"),
 	       FadeOut ? **FadeOut : TEXT("即座"));

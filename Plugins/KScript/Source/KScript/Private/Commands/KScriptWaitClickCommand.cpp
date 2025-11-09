@@ -5,7 +5,7 @@
 #include "KScriptEngine.h"
 #include "KScriptVariable.h"
 
-void UKScriptWaitClickCommand::Execute(UKScriptEngine* Engine, const FKScriptCommand& Command, UKScriptVariable* VariableManager)
+void UKScriptWaitClickCommand::Execute(class UKScriptEngine* Engine, const FKScriptCommand* Command, class UKScriptVariable* VariableManager)
 {
 	UE_LOG(LogKScript, Log, TEXT("[クリック待ち]"));
 	if (Engine)

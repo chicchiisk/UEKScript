@@ -26,7 +26,7 @@ public:
 	 * @param Command 実行するコマンド情報
 	 * @param VariableManager 変数管理システム
 	 */
-	virtual void Execute(UKScriptEngine* Engine, const FKScriptCommand& Command, UKScriptVariable* VariableManager)
+	virtual void Execute(class UKScriptEngine* Engine, const FKScriptCommand* Command, class UKScriptVariable* VariableManager)
 	{
 		// 基底クラスでは何もしない（サブクラスでオーバーライド）
 	}

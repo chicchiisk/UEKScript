@@ -7,11 +7,11 @@
 #include "KScriptUIManager.h"
 #include "KScriptImageManager.h"
 
-void UKScriptCharaHideCommand::Execute(UKScriptEngine* Engine, const FKScriptCommand& Command,
-                                       UKScriptVariable* VariableManager)
+void UKScriptCharaHideCommand::Execute(class UKScriptEngine* Engine, const FKScriptCommand* Command,
+                                       class UKScriptVariable* VariableManager)
 {
-	const FString* Name = Command.Parameters.Find(TEXT("name"));
-	const FString* Layer = Command.Parameters.Find(TEXT("layer"));
+	const FString* Name = Command->Parameters.Find(TEXT("name"));
+	const FString* Layer = Command->Parameters.Find(TEXT("layer"));
 
 	if (Name)
 	{

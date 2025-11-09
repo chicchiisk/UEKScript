@@ -4,7 +4,7 @@
 #include "KScript.h"
 #include "KScriptEngine.h"
 
-void UKScriptWaitPageBreakCommand::Execute(UKScriptEngine* Engine, const FKScriptCommand& Command, UKScriptVariable* VariableManager)
+void UKScriptWaitPageBreakCommand::Execute(class UKScriptEngine* Engine, const FKScriptCommand* Command, class UKScriptVariable* VariableManager)
 {
 	UE_LOG(LogKScript, Log, TEXT("[ページ区切り待ち]"));
 	

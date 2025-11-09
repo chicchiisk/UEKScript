@@ -6,7 +6,7 @@
 #include "KScriptUIManager.h"
 #include "KScriptVariable.h"
 
-void UKScriptClearMessageCommand::Execute(UKScriptEngine* Engine, const FKScriptCommand& Command, UKScriptVariable* VariableManager)
+void UKScriptClearMessageCommand::Execute(class UKScriptEngine* Engine, const FKScriptCommand* Command, class UKScriptVariable* VariableManager)
 {
 	UE_LOG(LogKScript, Log, TEXT("[メッセージクリア]"));
 	// TODO: UIのメッセージをクリア

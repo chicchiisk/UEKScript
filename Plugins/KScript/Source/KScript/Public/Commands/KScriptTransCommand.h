@@ -24,5 +24,5 @@ class KSCRIPT_API UKScriptTransCommand : public UKScriptCommandBase
 	GENERATED_BODY()
 
 public:
-	virtual void Execute(const FKScriptCommand& Command, class UKScriptEngine* Engine) override;
+	virtual void Execute(class UKScriptEngine* Engine, const FKScriptCommand* Command, class UKScriptVariable* VariableManager) override;
 };

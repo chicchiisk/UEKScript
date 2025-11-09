@@ -5,9 +5,9 @@
 #include "KScriptEngine.h"
 #include "KScriptVariable.h"
 
-void UKScriptIfCommand::Execute(UKScriptEngine* Engine, const FKScriptCommand& Command, UKScriptVariable* VariableManager)
+void UKScriptIfCommand::Execute(class UKScriptEngine* Engine, const FKScriptCommand* Command, class UKScriptVariable* VariableManager)
 {
-	const FString* Expression = Command.Parameters.Find(TEXT("exp"));
+	const FString* Expression = Command->Parameters.Find(TEXT("exp"));
 	if (Expression && VariableManager && Engine)
 	{
 		FKScriptVariableValue Result;

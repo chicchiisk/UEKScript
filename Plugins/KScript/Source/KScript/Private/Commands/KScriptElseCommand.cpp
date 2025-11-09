@@ -5,7 +5,7 @@
 #include "KScriptEngine.h"
 #include "KScriptVariable.h"
 
-void UKScriptElseCommand::Execute(UKScriptEngine* Engine, const FKScriptCommand& Command, UKScriptVariable* VariableManager)
+void UKScriptElseCommand::Execute(class UKScriptEngine* Engine, const FKScriptCommand* Command, class UKScriptVariable* VariableManager)
 {
 	// elseに到達したということは、ifの条件が真だった場合
 	// endifまでスキップする

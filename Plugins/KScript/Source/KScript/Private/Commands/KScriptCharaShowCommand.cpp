@@ -7,12 +7,12 @@
 #include "KScriptUIManager.h"
 #include "KScriptImageManager.h"
 
-void UKScriptCharaShowCommand::Execute(UKScriptEngine* Engine, const FKScriptCommand& Command,
-                                       UKScriptVariable* VariableManager)
+void UKScriptCharaShowCommand::Execute(class UKScriptEngine* Engine, const FKScriptCommand* Command,
+                                       class UKScriptVariable* VariableManager)
 {
-	const FString* Name = Command.Parameters.Find(TEXT("name"));
-	const FString* Storage = Command.Parameters.Find(TEXT("storage"));
-	const FString* Layer = Command.Parameters.Find(TEXT("layer"));
+	const FString* Name = Command->Parameters.Find(TEXT("name"));
+	const FString* Storage = Command->Parameters.Find(TEXT("storage"));
+	const FString* Layer = Command->Parameters.Find(TEXT("layer"));
 
 	if (Name && Storage)
 	{
@@ -21,8 +21,8 @@ void UKScriptCharaShowCommand::Execute(UKScriptEngine* Engine, const FKScriptCom
 
 		// 位置パラメータを取得（オプション）
 		FVector2D Position = FVector2D::ZeroVector;
-		const FString* Left = Command.Parameters.Find(TEXT("left"));
-		const FString* Top = Command.Parameters.Find(TEXT("top"));
+		const FString* Left = Command->Parameters.Find(TEXT("left"));
+		const FString* Top = Command->Parameters.Find(TEXT("top"));
 		if (Left)
 		{
 			Position.X = FCString::Atof(**Left);

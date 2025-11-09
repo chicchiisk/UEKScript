@@ -5,7 +5,7 @@
 #include "KScriptEngine.h"
 #include "KScriptVariable.h"
 
-void UKScriptReturnCommand::Execute(UKScriptEngine* Engine, const FKScriptCommand& Command, UKScriptVariable* VariableManager)
+void UKScriptReturnCommand::Execute(class UKScriptEngine* Engine, const FKScriptCommand* Command, class UKScriptVariable* VariableManager)
 {
 	if (Engine)
 	{

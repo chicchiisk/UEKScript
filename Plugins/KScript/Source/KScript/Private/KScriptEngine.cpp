@@ -212,7 +212,7 @@ void UKScriptEngine::ExecuteCommand(const FKScriptCommand& Command)
 		UKScriptCommandBase* CommandInstance = CommandFactory->GetCommand(Command.Type);
 		if (CommandInstance)
 		{
-			CommandInstance->Execute(this, Command, VariableManager);
+			CommandInstance->Execute(this, &Command, VariableManager);
 		}
 		else
 		{

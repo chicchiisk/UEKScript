@@ -72,7 +72,7 @@ struct KSCRIPT_API FKScriptTransitionInfo
  * 画像の表示切り替え時にフェードやスライドなどのエフェクトを適用
  */
 UCLASS()
-class KSCRIPT_API UKScriptTransitionManager : public UWorldSubsystem
+class KSCRIPT_API UKScriptTransitionManager : public UTickableWorldSubsystem
 {
 	GENERATED_BODY()
 
@@ -81,7 +81,7 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
 	virtual void Tick(float DeltaTime) override;
-	virtual TStatTracker& GetStatId() const override;
+	virtual TStatId GetStatId() const override;
 	// End of USubsystem interface
 
 	/**

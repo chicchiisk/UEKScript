@@ -5,9 +5,9 @@
 #include "KScriptEngine.h"
 #include "KScriptVariable.h"
 
-void UKScriptJumpCommand::Execute(UKScriptEngine* Engine, const FKScriptCommand& Command, UKScriptVariable* VariableManager)
+void UKScriptJumpCommand::Execute(class UKScriptEngine* Engine, const FKScriptCommand* Command, class UKScriptVariable* VariableManager)
 {
-	const FString* TargetLabel = Command.Parameters.Find(TEXT("target"));
+	const FString* TargetLabel = Command->Parameters.Find(TEXT("target"));
 	if (TargetLabel && Engine)
 	{
 		Engine->JumpToLabel(*TargetLabel);

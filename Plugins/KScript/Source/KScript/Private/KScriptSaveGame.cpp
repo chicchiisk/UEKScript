@@ -1,8 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "KScriptSaveGame.h"
-
-DEFINE_LOG_CATEGORY_STATIC(LogKScript, Log, All);
+#include "KScript.h"
 
 UKScriptSaveGame::UKScriptSaveGame()
 {

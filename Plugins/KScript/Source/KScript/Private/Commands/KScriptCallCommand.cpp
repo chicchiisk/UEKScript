@@ -5,9 +5,9 @@
 #include "KScriptEngine.h"
 #include "KScriptVariable.h"
 
-void UKScriptCallCommand::Execute(UKScriptEngine* Engine, const FKScriptCommand& Command, UKScriptVariable* VariableManager)
+void UKScriptCallCommand::Execute(class UKScriptEngine* Engine, const FKScriptCommand* Command, class UKScriptVariable* VariableManager)
 {
-	const FString* TargetLabel = Command.Parameters.Find(TEXT("target"));
+	const FString* TargetLabel = Command->Parameters.Find(TEXT("target"));
 	if (TargetLabel && Engine)
 	{
 		// 現在の位置をコールスタックにプッシュ

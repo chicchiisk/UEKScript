@@ -6,7 +6,7 @@
 #include "KScriptSubsystem.h"
 #include "Engine/GameInstance.h"
 
-void UKScriptLoadCommand::Execute(const FKScriptCommand& Command, UKScriptEngine* Engine)
+void UKScriptLoadCommand::Execute(UKScriptEngine* Engine, const FKScriptCommand* Command, UKScriptVariable* VariableManager)
 {
 	if (!Engine)
 	{
@@ -15,9 +15,9 @@ void UKScriptLoadCommand::Execute(const FKScriptCommand& Command, UKScriptEngine
 
 	// スロット名を取得（デフォルトは"QuickSave"）
 	FString SlotName = TEXT("QuickSave");
-	if (Command.Parameters.Contains(TEXT("slot")))
+	if (Command->Parameters.Contains(TEXT("slot")))
 	{
-		SlotName = Command.Parameters[TEXT("slot")];
+		SlotName = Command->Parameters[TEXT("slot")];
 	}
 
 	// KScriptSubsystemを取得

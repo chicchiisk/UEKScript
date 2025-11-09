@@ -6,7 +6,7 @@
 #include "KScriptImageManager.h"
 #include "KScriptTransitionManager.h"
 
-void UKScriptTransCommand::Execute(const FKScriptCommand& Command, UKScriptEngine* Engine)
+void UKScriptTransCommand::Execute(UKScriptEngine* Engine, const FKScriptCommand* Command, class UKScriptVariable* VariableManager)
 {
 	if (!Engine)
 	{
@@ -15,16 +15,16 @@ void UKScriptTransCommand::Execute(const FKScriptCommand& Command, UKScriptEngin
 
 	// トランジションの種類を取得
 	FString Method = TEXT("fade");
-	if (Command.Parameters.Contains(TEXT("method")))
+	if (Command->Parameters.Contains(TEXT("method")))
 	{
-		Method = Command.Parameters[TEXT("method")].ToLower();
+		Method = Command->Parameters[TEXT("method")].ToLower();
 	}
 
 	// トランジション時間を取得（ミリ秒）
 	float TimeMs = 500.0f;
-	if (Command.Parameters.Contains(TEXT("time")))
+	if (Command->Parameters.Contains(TEXT("time")))
 	{
-		TimeMs = FCString::Atof(*Command.Parameters[TEXT("time")]);
+		TimeMs = FCString::Atof(*Command->Parameters[TEXT("time")]);
 	}
 
 	// ミリ秒を秒に変換

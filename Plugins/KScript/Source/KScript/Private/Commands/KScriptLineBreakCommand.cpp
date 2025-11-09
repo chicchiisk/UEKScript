@@ -6,7 +6,7 @@
 #include "KScriptUIManager.h"
 #include "KScriptVariable.h"
 
-void UKScriptLineBreakCommand::Execute(UKScriptEngine* Engine, const FKScriptCommand& Command, UKScriptVariable* VariableManager)
+void UKScriptLineBreakCommand::Execute(class UKScriptEngine* Engine, const FKScriptCommand* Command, class UKScriptVariable* VariableManager)
 {
 	UE_LOG(LogKScript, Log, TEXT("[改行]"));
 	UKScriptUIManager* UIManager = GetWorld()->GetSubsystem<UKScriptUIManager>();

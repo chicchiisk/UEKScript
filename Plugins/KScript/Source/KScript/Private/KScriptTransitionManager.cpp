@@ -4,8 +4,6 @@
 #include "KScript.h"
 #include "Components/CanvasPanelSlot.h"
 
-DEFINE_LOG_CATEGORY_STATIC(LogKScript, Log, All);
-
 DECLARE_STATS_GROUP(TEXT("KScript"), STATGROUP_KScript, STATCAT_Advanced);
 DECLARE_CYCLE_STAT(TEXT("TransitionManager Tick"), STAT_TransitionManagerTick, STATGROUP_KScript);
 
@@ -54,7 +52,7 @@ void UKScriptTransitionManager::Tick(float DeltaTime)
 	}
 }
 
-TStatTracker& UKScriptTransitionManager::GetStatId() const
+TStatId UKScriptTransitionManager::GetStatId() const
 {
 	RETURN_QUICK_DECLARE_CYCLE_STAT(UKScriptTransitionManager, STATGROUP_Tickables);
 }

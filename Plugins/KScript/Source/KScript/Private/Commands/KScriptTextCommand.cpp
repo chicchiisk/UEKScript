@@ -6,12 +6,12 @@
 #include "KScriptUIManager.h"
 #include "KScriptVariable.h"
 
-void UKScriptTextCommand::Execute(UKScriptEngine* Engine, const FKScriptCommand& Command, UKScriptVariable* VariableManager)
+void UKScriptTextCommand::Execute(class UKScriptEngine* Engine, const FKScriptCommand* Command, class UKScriptVariable* VariableManager)
 {
-	UE_LOG(LogKScript, Log, TEXT("[テキスト] %s"), *Command.Text);
+	UE_LOG(LogKScript, Log, TEXT("[テキスト] %s"), *Command->Text);
 	UKScriptUIManager* UIManager = GetWorld()->GetSubsystem<UKScriptUIManager>();
 	if (UIManager)
 	{
-		UIManager->AppendText(Command.Text);
+		UIManager->AppendText(Command->Text);
 	}
 }

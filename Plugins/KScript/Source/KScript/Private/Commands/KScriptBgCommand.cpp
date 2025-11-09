@@ -6,10 +6,10 @@
 #include "KScriptUIManager.h"
 #include "KScriptImageManager.h"
 
-void UKScriptBgCommand::Execute(UKScriptEngine* Engine, const FKScriptCommand& Command,
-                                UKScriptVariable* VariableManager)
+void UKScriptBgCommand::Execute(class UKScriptEngine* Engine, const FKScriptCommand* Command,
+                                class UKScriptVariable* VariableManager)
 {
-	const FString* Storage = Command.Parameters.Find(TEXT("storage"));
+	const FString* Storage = Command->Parameters.Find(TEXT("storage"));
 	if (Storage)
 	{
 		UE_LOG(LogKScript, Log, TEXT("[背景表示] ファイル: %s"), **Storage);

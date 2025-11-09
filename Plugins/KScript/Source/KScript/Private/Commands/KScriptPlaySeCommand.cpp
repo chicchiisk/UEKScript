@@ -7,12 +7,12 @@
 #include "KScriptUIManager.h"
 #include "KScriptAudioManager.h"
 
-void UKScriptPlaySeCommand::Execute(UKScriptEngine* Engine, const FKScriptCommand& Command,
-                                    UKScriptVariable* VariableManager)
+void UKScriptPlaySeCommand::Execute(class UKScriptEngine* Engine, const FKScriptCommand* Command,
+                                    class UKScriptVariable* VariableManager)
 {
-	const FString* Storage = Command.Parameters.Find(TEXT("storage"));
-	const FString* Loop = Command.Parameters.Find(TEXT("loop"));
-	const FString* Buf = Command.Parameters.Find(TEXT("buf"));
+	const FString* Storage = Command->Parameters.Find(TEXT("storage"));
+	const FString* Loop = Command->Parameters.Find(TEXT("loop"));
+	const FString* Buf = Command->Parameters.Find(TEXT("buf"));
 
 	if (Storage)
 	{
@@ -22,7 +22,7 @@ void UKScriptPlaySeCommand::Execute(UKScriptEngine* Engine, const FKScriptComman
 
 		// ボリュームパラメータを取得（オプション、デフォルト: 1.0）
 		float Volume = 1.0f;
-		const FString* VolumeStr = Command.Parameters.Find(TEXT("volume"));
+		const FString* VolumeStr = Command->Parameters.Find(TEXT("volume"));
 		if (VolumeStr)
 		{
 			Volume = FCString::Atof(**VolumeStr) / 100.0f; // ティラノスクリプトでは0-100の範囲
